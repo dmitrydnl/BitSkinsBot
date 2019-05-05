@@ -334,4 +334,5 @@ ASALocalRun/
 .localhistory/
 
 .DS_Store
-BitSkinsBot/account_data.json
+
+src/BitSkinsBot/account_data.json
