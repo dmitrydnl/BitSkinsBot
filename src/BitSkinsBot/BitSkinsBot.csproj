@@ -12,6 +12,7 @@
   <ItemGroup>
     <Folder Include="App\" />
     <Folder Include="App\Bot\" />
+    <Folder Include="App\FastMarketAnalize\" />
   </ItemGroup>
   <ItemGroup>
     <None Update="account_data.json">

@@ -1,5 +1,4 @@
 ﻿using System;
-using BitSkinsApi;
 
 namespace BitSkinsBot
 {
@@ -9,8 +8,8 @@ namespace BitSkinsBot
         {
             Bot.Initilize.InitilizeAccount();
 
-            var a = BitSkinsApi.Balance.CurrentBalance.GetAccountBalance();
-            Console.WriteLine(a.AvailableBalance);
+            FastMarketAnalize.ProfitableItems profitableItems = new FastMarketAnalize.ProfitableItems();
+            profitableItems.GetProfitableItems();
 
             Console.ReadKey();
         }
