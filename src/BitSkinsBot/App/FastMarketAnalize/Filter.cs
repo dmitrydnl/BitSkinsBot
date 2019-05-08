@@ -15,5 +15,9 @@ namespace BitSkinsBot.FastMarketAnalize
         internal int? MaxCumulativePricePercentFromLowestCumulativePrice { get; set; }
         internal int? MinRecentAveragePricePercentFromLowestPrice { get; set; }
         internal int? MaxRecentAveragePricePercentFromLowestPrice { get; set; }
+        internal int? MinCountOfSalesInLastWeek { get; set; }
+        internal int? MaxCountOfSalesInLastWeek { get; set; }
+        internal int? MinAveragePriceInLastWeekPercentFromLowestPrice { get; set; }
+        internal int? MaxAveragePriceInLastWeekPercentFromLowestPrice { get; set; }
     }
 }

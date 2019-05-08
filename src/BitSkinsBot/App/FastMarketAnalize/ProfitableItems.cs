@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using BitSkinsApi.Market;
 using BitSkinsApi.Balance;
@@ -23,7 +24,11 @@ namespace BitSkinsBot.FastMarketAnalize
                 MinCumulativePricePercentFromLowestCumulativePrice = 130,
                 MaxCumulativePricePercentFromLowestCumulativePrice = null,
                 MinRecentAveragePricePercentFromLowestPrice = 130,
-                MaxRecentAveragePricePercentFromLowestPrice = null
+                MaxRecentAveragePricePercentFromLowestPrice = null,
+                MinCountOfSalesInLastWeek = 15,
+                MaxCountOfSalesInLastWeek = null,
+                MinAveragePriceInLastWeekPercentFromLowestPrice = 110,
+                MaxAveragePriceInLastWeekPercentFromLowestPrice = null
             };
 
             currentFilter = filter;
@@ -47,6 +52,9 @@ namespace BitSkinsBot.FastMarketAnalize
             Console.WriteLine(marketItems.Count);
 
             marketItems = SortByRecentAveragePrice(marketItems);
+            Console.WriteLine(marketItems.Count);
+
+            marketItems = SortByRecentSales(marketItems);
             Console.WriteLine(marketItems.Count);
         }
 
@@ -174,6 +182,67 @@ namespace BitSkinsBot.FastMarketAnalize
                     if (maxRecentAveragePrice == null || recentAveragePrice <= maxRecentAveragePrice)
                     {
                         sortMarketItems.Add(marketItem);
+                    }
+                }
+            }
+
+            return sortMarketItems;
+        }
+
+        private List<MarketItem> SortByRecentSales(List<MarketItem> marketItems)
+        {
+            List<MarketItem> sortMarketItems = new List<MarketItem>();
+            foreach (MarketItem marketItem in marketItems)
+            {
+                string itemName = marketItem.MarketHashName;
+                List<ItemRecentSale> itemRecentSales = new List<ItemRecentSale>();
+                for (int i = 1; i <= 5; i++)
+                {
+                    List<ItemRecentSale> items = RecentSaleInfo.GetRecentSaleInfo(currentFilter.App, itemName, i);
+                    foreach (ItemRecentSale item in items)
+                    {
+                        itemRecentSales.Add(item);
+                    }
+                }
+
+                int countOfSalesInLastWeek = 0;
+                List<double> priceSales = new List<double>();
+                foreach (ItemRecentSale item in itemRecentSales)
+                {
+                    if (item.SoldAt < DateTime.Now.AddDays(-7))
+                    {
+                        break;
+                    }
+
+                    countOfSalesInLastWeek++;
+                    priceSales.Add(item.Price);
+                }
+
+                double averagePriceInLastWeek = 0;
+                if (priceSales.Count > 0)
+                {
+                    averagePriceInLastWeek = priceSales.Average();
+                }
+
+                double lowestPrice = marketItem.LowestPrice;
+                int? minCountOfSalesInLastWeek = currentFilter.MinCountOfSalesInLastWeek;
+                int? maxCountOfSalesInLastWeek = currentFilter.MaxCountOfSalesInLastWeek;
+                double? minAveragePriceInLastWeek = currentFilter.MinAveragePriceInLastWeekPercentFromLowestPrice == null ?
+                    null : lowestPrice / 100 * currentFilter.MinAveragePriceInLastWeekPercentFromLowestPrice;
+                double? maxAveragePriceInLastWeek = currentFilter.MaxAveragePriceInLastWeekPercentFromLowestPrice == null ?
+                    null : lowestPrice / 100 * currentFilter.MaxAveragePriceInLastWeekPercentFromLowestPrice;
+
+                if (minCountOfSalesInLastWeek == null || countOfSalesInLastWeek >= minCountOfSalesInLastWeek)
+                {
+                    if (maxCountOfSalesInLastWeek == null || countOfSalesInLastWeek <= maxCountOfSalesInLastWeek)
+                    {
+                        if (minAveragePriceInLastWeek == null || averagePriceInLastWeek >= minAveragePriceInLastWeek)
+                        {
+                            if (maxAveragePriceInLastWeek == null || averagePriceInLastWeek <= maxAveragePriceInLastWeek)
+                            {
+                                sortMarketItems.Add(marketItem);
+                            }
+                        }
                     }
                 }
             }
