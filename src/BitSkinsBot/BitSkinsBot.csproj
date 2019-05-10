@@ -15,8 +15,16 @@
     <Folder Include="App\FastMarketAnalize\" />
   </ItemGroup>
   <ItemGroup>
+    <None Remove="filters.json" />
+  </ItemGroup>
+  <ItemGroup>
     <None Update="account_data.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="filters.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 </Project>

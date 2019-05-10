@@ -10,52 +10,40 @@ namespace BitSkinsBot.FastMarketAnalize
     {
         private readonly Filter currentFilter;
 
-        internal ProfitableItems()
+        internal ProfitableItems(Filter filter)
         {
-            Filter filter = new Filter
-            {
-                App = AppId.AppName.CounterStrikGlobalOffensive,
-                MinTotalItems = 10,
-                MaxTotalItems = null,
-                MinLowestPricePercentFromBalance = 2,
-                MaxLowestPricePercentFromBalance = 10,
-                MinHighestPricePercentFromLowestPrice = 130,
-                MaxHighestPricePercentFromLowestPrice = null,
-                MinCumulativePricePercentFromLowestCumulativePrice = 130,
-                MaxCumulativePricePercentFromLowestCumulativePrice = null,
-                MinRecentAveragePricePercentFromLowestPrice = 130,
-                MaxRecentAveragePricePercentFromLowestPrice = null,
-                MinCountOfSalesInLastWeek = 15,
-                MaxCountOfSalesInLastWeek = null,
-                MinAveragePriceInLastWeekPercentFromLowestPrice = 110,
-                MaxAveragePriceInLastWeekPercentFromLowestPrice = null
-            };
-
             currentFilter = filter;
         }
 
-        internal void GetProfitableItems()
+        internal List<ProfitableMarketItem> GetProfitableItems()
         {
+            Console.WriteLine("Start find profitable items");
+
             List<MarketItem> marketItems = GetMarketItems();
-            Console.WriteLine(marketItems.Count);
+            Console.WriteLine("All items: " + marketItems.Count);
 
             marketItems = SortByTotalItems(marketItems);
-            Console.WriteLine(marketItems.Count);
+            Console.WriteLine("1 sort count: " + marketItems.Count);
 
             marketItems = SortByLowestPrice(marketItems);
-            Console.WriteLine(marketItems.Count);
+            Console.WriteLine("2 sort count: " + marketItems.Count);
 
             marketItems = SortByHighestPrice(marketItems);
-            Console.WriteLine(marketItems.Count);
+            Console.WriteLine("3 sort count: " + marketItems.Count);
 
             marketItems = SortByCumulativePrice(marketItems);
-            Console.WriteLine(marketItems.Count);
+            Console.WriteLine("4 sort count: " + marketItems.Count);
 
             marketItems = SortByRecentAveragePrice(marketItems);
-            Console.WriteLine(marketItems.Count);
+            Console.WriteLine("5 sort count: " + marketItems.Count);
 
             marketItems = SortByRecentSales(marketItems);
-            Console.WriteLine(marketItems.Count);
+            Console.WriteLine("6 sort count: " + marketItems.Count);
+
+            List<ProfitableMarketItem> profitableMarketItems = GetProfitableMarketItems(marketItems);
+            Console.WriteLine("Final sort count: " + profitableMarketItems.Count);
+
+            return profitableMarketItems;
         }
 
         private double GetAvailableBalance()
@@ -191,6 +179,7 @@ namespace BitSkinsBot.FastMarketAnalize
 
         private List<MarketItem> SortByRecentSales(List<MarketItem> marketItems)
         {
+            int count = 0;
             List<MarketItem> sortMarketItems = new List<MarketItem>();
             foreach (MarketItem marketItem in marketItems)
             {
@@ -245,9 +234,56 @@ namespace BitSkinsBot.FastMarketAnalize
                         }
                     }
                 }
+
+                count++;
+                Console.WriteLine(count + " from " + marketItems.Count);
             }
 
             return sortMarketItems;
+        }
+    
+        private List<ProfitableMarketItem> GetProfitableMarketItems(List<MarketItem> marketItems)
+        {
+            int count = 0;
+            List<ProfitableMarketItem> profitableMarketItems = new List<ProfitableMarketItem>();
+            foreach (MarketItem marketItem in marketItems)
+            {
+                string name = marketItem.MarketHashName;
+                List<ItemOnSale> ItemsOnSale = InventoryOnSale.GetInventoryOnSale(currentFilter.App, 1, name, 0, 0, InventoryOnSale.SortBy.Price,
+                    InventoryOnSale.SortOrder.Asc, InventoryOnSale.ThreeChoices.NotImportant, InventoryOnSale.ThreeChoices.NotImportant,
+                    InventoryOnSale.ThreeChoices.NotImportant, InventoryOnSale.ResultsPerPage.R30, InventoryOnSale.ThreeChoices.NotImportant);
+
+                ItemOnSale itemOnSale = ItemsOnSale[0];
+                ItemOnSale itemOnSale3 = null;
+                if (ItemsOnSale.Count >= 3)
+                {
+                    itemOnSale3 = ItemsOnSale[2];
+                }
+
+                if (itemOnSale3 == null || itemOnSale3.Price >= itemOnSale.Price * 1.05)
+                {
+                    if (!itemOnSale.IsMine)
+                    {
+                        if (itemOnSale.Price <= marketItem.LowestPrice)
+                        {
+                            ProfitableMarketItem profitableMarketItem = new ProfitableMarketItem
+                            {
+                                Name = marketItem.MarketHashName,
+                                Id = itemOnSale.ItemId,
+                                BuyPrice = itemOnSale.Price,
+                                SellPrice = Math.Round(itemOnSale.Price / 100 * (currentFilter.MinAveragePriceInLastWeekPercentFromLowestPrice == null ?
+                                110 : (double)currentFilter.MinAveragePriceInLastWeekPercentFromLowestPrice), 2)
+                            };
+                            profitableMarketItems.Add(profitableMarketItem);
+                        }
+                    }
+                }
+
+                count++;
+                Console.WriteLine(count + " from " + marketItems.Count);
+            }
+
+            return profitableMarketItems;
         }
     }
 }

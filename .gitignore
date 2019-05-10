@@ -336,3 +336,4 @@ ASALocalRun/
 .DS_Store
 
 src/BitSkinsBot/account_data.json
+src/BitSkinsBot/filters.json
