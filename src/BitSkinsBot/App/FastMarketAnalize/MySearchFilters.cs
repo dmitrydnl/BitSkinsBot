@@ -4,11 +4,11 @@ using BitSkinsApi.Market;
 
 namespace BitSkinsBot.FastMarketAnalize
 {
-    internal class Filters
+    internal class MySearchFilters
     {
-        internal readonly List<Filter> filters = new List<Filter>();
+        internal readonly List<SearchFilter> searchFilters = new List<SearchFilter>();
 
-        internal Filters()
+        internal MySearchFilters()
         {
             InitilizeFilters();
         }
@@ -18,15 +18,15 @@ namespace BitSkinsBot.FastMarketAnalize
             string jsonText = System.IO.File.ReadAllText("filters.json");
             dynamic jsonObject = JsonConvert.DeserializeObject<dynamic>(jsonText);
 
-            foreach (dynamic jsonFilter in jsonObject.filters)
+            foreach (dynamic jsonFilter in jsonObject.Filters)
             {
-                Filter filter = new Filter
+                SearchFilter searchFilter = new SearchFilter
                 {
                     App = (AppId.AppName)jsonFilter.App,
                     MinTotalItems = jsonFilter.MinTotalItems,
                     MaxTotalItems = jsonFilter.MaxTotalItems,
-                    MinLowestPricePercentFromBalance = jsonFilter.MinLowestPricePercentFromBalance,
-                    MaxLowestPricePercentFromBalance = jsonFilter.MaxLowestPricePercentFromBalance,
+                    MinLowestPrice = jsonFilter.MinLowestPrice,
+                    MaxLowestPrice = jsonFilter.MaxLowestPrice,
                     MinHighestPricePercentFromLowestPrice = jsonFilter.MinHighestPricePercentFromLowestPrice,
                     MaxHighestPricePercentFromLowestPrice = jsonFilter.MaxHighestPricePercentFromLowestPrice,
                     MinCumulativePricePercentFromLowestCumulativePrice = jsonFilter.MinCumulativePricePercentFromLowestCumulativePrice,
@@ -39,18 +39,18 @@ namespace BitSkinsBot.FastMarketAnalize
                     MaxAveragePriceInLastWeekPercentFromLowestPrice = jsonFilter.MaxAveragePriceInLastWeekPercentFromLowestPrice
                 };
 
-                filters.Add(filter);
+                searchFilters.Add(searchFilter);
             }
         }
     }
 
-    internal class Filter
+    internal class SearchFilter
     {
         internal AppId.AppName App { get; set; }
         internal int? MinTotalItems { get; set; }
         internal int? MaxTotalItems { get; set; }
-        internal int? MinLowestPricePercentFromBalance { get; set; }
-        internal int? MaxLowestPricePercentFromBalance { get; set; }
+        internal double? MinLowestPrice { get; set; }
+        internal double? MaxLowestPrice { get; set; }
         internal int? MinHighestPricePercentFromLowestPrice { get; set; }
         internal int? MaxHighestPricePercentFromLowestPrice { get; set; }
         internal int? MinCumulativePricePercentFromLowestCumulativePrice { get; set; }

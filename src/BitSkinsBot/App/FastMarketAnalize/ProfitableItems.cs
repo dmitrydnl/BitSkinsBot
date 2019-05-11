@@ -2,288 +2,470 @@
 using System.Linq;
 using System.Collections.Generic;
 using BitSkinsApi.Market;
-using BitSkinsApi.Balance;
+using BitSkinsBot.Log;
 
 namespace BitSkinsBot.FastMarketAnalize
 {
-    internal class ProfitableItems
+    internal static class ProfitableItems
     {
-        private readonly Filter currentFilter;
-
-        internal ProfitableItems(Filter filter)
+        internal static List<ProfitableMarketItem> GetProfitableItems(SearchFilter searchFilter)
         {
-            currentFilter = filter;
-        }
+            ConsoleLog.WriteInfo("Start get profitable items");
 
-        internal List<ProfitableMarketItem> GetProfitableItems()
-        {
-            Console.WriteLine("Start find profitable items");
+            List<MarketItem> marketItems = GetMarketItems(searchFilter);
 
-            List<MarketItem> marketItems = GetMarketItems();
-            Console.WriteLine("All items: " + marketItems.Count);
+            ConsoleLog.WriteInfo($"Market items - {marketItems.Count}");
 
-            marketItems = SortByTotalItems(marketItems);
-            Console.WriteLine("1 sort count: " + marketItems.Count);
+            marketItems = SortProfitableItems(marketItems, searchFilter);
+            List<ProfitableMarketItem> profitableMarketItems = GetProfitableMarketItems(marketItems, searchFilter);
 
-            marketItems = SortByLowestPrice(marketItems);
-            Console.WriteLine("2 sort count: " + marketItems.Count);
-
-            marketItems = SortByHighestPrice(marketItems);
-            Console.WriteLine("3 sort count: " + marketItems.Count);
-
-            marketItems = SortByCumulativePrice(marketItems);
-            Console.WriteLine("4 sort count: " + marketItems.Count);
-
-            marketItems = SortByRecentAveragePrice(marketItems);
-            Console.WriteLine("5 sort count: " + marketItems.Count);
-
-            marketItems = SortByRecentSales(marketItems);
-            Console.WriteLine("6 sort count: " + marketItems.Count);
-
-            List<ProfitableMarketItem> profitableMarketItems = GetProfitableMarketItems(marketItems);
-            Console.WriteLine("Final sort count: " + profitableMarketItems.Count);
+            ConsoleLog.WriteInfo("End get profitable items");
 
             return profitableMarketItems;
         }
 
-        private double GetAvailableBalance()
-        {
-            double availableBalance = CurrentBalance.GetAccountBalance().AvailableBalance;
-            return availableBalance;
-        }
 
-        private List<MarketItem> GetMarketItems()
+        private static List<MarketItem> GetMarketItems(SearchFilter searchFilter)
         {
-            List<MarketItem> marketItems = MarketData.GetMarketData(currentFilter.App);
+            List<MarketItem> marketItems = MarketData.GetMarketData(searchFilter.App);
             return marketItems;
         }
 
-        private List<MarketItem> SortByTotalItems(List<MarketItem> marketItems)
+        private static List<ItemRecentSale> GetItemRecentSales(SearchFilter searchFilter, string marketHashName)
         {
-            List<MarketItem> sortMarketItems = new List<MarketItem>();
-            foreach (MarketItem marketItem in marketItems)
+            List<ItemRecentSale> itemRecentSales = new List<ItemRecentSale>();
+            for (int i = 1; i <= 5; i++)
             {
-                int totalItems = marketItem.TotalItems;
-                int? minTotalItems = currentFilter.MinTotalItems;
-                int? maxTotalItems = currentFilter.MaxTotalItems;
-
-                if (minTotalItems == null || totalItems >= minTotalItems)
+                List<ItemRecentSale> items = RecentSaleInfo.GetRecentSaleInfo(searchFilter.App, marketHashName, i);
+                foreach (ItemRecentSale item in items)
                 {
-                    if (maxTotalItems == null || totalItems <= maxTotalItems)
-                    {
-                        sortMarketItems.Add(marketItem);
-                    }
+                    itemRecentSales.Add(item);
                 }
             }
 
-            return sortMarketItems;
+            return itemRecentSales;
         }
 
-        private List<MarketItem> SortByLowestPrice(List<MarketItem> marketItems)
+        private static int GetCountOfSalesInLastWeek(List<ItemRecentSale> itemRecentSales)
         {
-            double availableBalance = GetAvailableBalance();
-
-            List<MarketItem> sortMarketItems = new List<MarketItem>();
-            foreach (MarketItem marketItem in marketItems)
+            int countOfSalesInLastWeek = 0;
+            foreach (ItemRecentSale recentSale in itemRecentSales)
             {
-                double lowestPrice = marketItem.LowestPrice;
-                double? minLowestPrice = currentFilter.MinLowestPricePercentFromBalance == null ? 
-                    null : availableBalance / 100 * currentFilter.MinLowestPricePercentFromBalance;
-                double? maxLowestPrice = currentFilter.MaxLowestPricePercentFromBalance == null ? 
-                    null : availableBalance / 100 * currentFilter.MaxLowestPricePercentFromBalance;
-
-                if (minLowestPrice == null || lowestPrice >= minLowestPrice)
+                if (recentSale.SoldAt >= DateTime.Now.AddDays(-7))
                 {
-                    if (maxLowestPrice == null || lowestPrice <= maxLowestPrice)
-                    {
-                        sortMarketItems.Add(marketItem);
-                    }
-                }
-            }
-
-            return sortMarketItems;
-        }
-
-        private List<MarketItem> SortByHighestPrice(List<MarketItem> marketItems)
-        {
-            List<MarketItem> sortMarketItems = new List<MarketItem>();
-            foreach (MarketItem marketItem in marketItems)
-            {
-                double lowestPrice = marketItem.LowestPrice;
-                double highestPrice = marketItem.HighestPrice;
-                double? minHighestPrice = currentFilter.MinHighestPricePercentFromLowestPrice == null ?
-                    null : lowestPrice / 100 * currentFilter.MinHighestPricePercentFromLowestPrice;
-                double? maxHighestPrice = currentFilter.MaxHighestPricePercentFromLowestPrice == null ?
-                    null : lowestPrice / 100 * currentFilter.MaxHighestPricePercentFromLowestPrice;
-
-                if (minHighestPrice == null || highestPrice >= minHighestPrice)
-                {
-                    if (maxHighestPrice == null || highestPrice <= maxHighestPrice)
-                    {
-                        sortMarketItems.Add(marketItem);
-                    }
-                }
-            }
-
-            return sortMarketItems;
-        }
-
-        private List<MarketItem> SortByCumulativePrice(List<MarketItem> marketItems)
-        {
-            List<MarketItem> sortMarketItems = new List<MarketItem>();
-            foreach (MarketItem marketItem in marketItems)
-            {
-                int totalItems = marketItem.TotalItems;
-                double lowestPrice = marketItem.LowestPrice;
-                double cumulativePrice = marketItem.CumulativePrice;
-                double? minCumulativePrice = currentFilter.MinCumulativePricePercentFromLowestCumulativePrice == null ?
-                    null : totalItems * lowestPrice / 100 * currentFilter.MinCumulativePricePercentFromLowestCumulativePrice;
-                double? maxCumulativePrice = currentFilter.MaxCumulativePricePercentFromLowestCumulativePrice == null ?
-                    null : totalItems * lowestPrice / 100 * currentFilter.MaxCumulativePricePercentFromLowestCumulativePrice;
-
-                if (minCumulativePrice == null || cumulativePrice >= minCumulativePrice)
-                {
-                    if (maxCumulativePrice == null || cumulativePrice <= maxCumulativePrice)
-                    {
-                        sortMarketItems.Add(marketItem);
-                    }
-                }
-            }
-
-            return sortMarketItems;
-        }
-
-        private List<MarketItem> SortByRecentAveragePrice(List<MarketItem> marketItems)
-        {
-            List<MarketItem> sortMarketItems = new List<MarketItem>();
-            foreach (MarketItem marketItem in marketItems)
-            {
-                double lowestPrice = marketItem.LowestPrice;
-                double recentAveragePrice = marketItem.RecentAveragePrice;
-                double? minRecentAveragePrice = currentFilter.MinRecentAveragePricePercentFromLowestPrice == null ?
-                    null : lowestPrice / 100 * currentFilter.MinRecentAveragePricePercentFromLowestPrice;
-                double? maxRecentAveragePrice = currentFilter.MaxRecentAveragePricePercentFromLowestPrice == null ?
-                    null : lowestPrice / 100 * currentFilter.MaxRecentAveragePricePercentFromLowestPrice;
-
-                if (minRecentAveragePrice == null || recentAveragePrice >= minRecentAveragePrice)
-                {
-                    if (maxRecentAveragePrice == null || recentAveragePrice <= maxRecentAveragePrice)
-                    {
-                        sortMarketItems.Add(marketItem);
-                    }
-                }
-            }
-
-            return sortMarketItems;
-        }
-
-        private List<MarketItem> SortByRecentSales(List<MarketItem> marketItems)
-        {
-            int count = 0;
-            List<MarketItem> sortMarketItems = new List<MarketItem>();
-            foreach (MarketItem marketItem in marketItems)
-            {
-                string itemName = marketItem.MarketHashName;
-                List<ItemRecentSale> itemRecentSales = new List<ItemRecentSale>();
-                for (int i = 1; i <= 5; i++)
-                {
-                    List<ItemRecentSale> items = RecentSaleInfo.GetRecentSaleInfo(currentFilter.App, itemName, i);
-                    foreach (ItemRecentSale item in items)
-                    {
-                        itemRecentSales.Add(item);
-                    }
-                }
-
-                int countOfSalesInLastWeek = 0;
-                List<double> priceSales = new List<double>();
-                foreach (ItemRecentSale item in itemRecentSales)
-                {
-                    if (item.SoldAt < DateTime.Now.AddDays(-7))
-                    {
-                        break;
-                    }
-
                     countOfSalesInLastWeek++;
-                    priceSales.Add(item.Price);
                 }
-
-                double averagePriceInLastWeek = 0;
-                if (priceSales.Count > 0)
-                {
-                    averagePriceInLastWeek = priceSales.Average();
-                }
-
-                double lowestPrice = marketItem.LowestPrice;
-                int? minCountOfSalesInLastWeek = currentFilter.MinCountOfSalesInLastWeek;
-                int? maxCountOfSalesInLastWeek = currentFilter.MaxCountOfSalesInLastWeek;
-                double? minAveragePriceInLastWeek = currentFilter.MinAveragePriceInLastWeekPercentFromLowestPrice == null ?
-                    null : lowestPrice / 100 * currentFilter.MinAveragePriceInLastWeekPercentFromLowestPrice;
-                double? maxAveragePriceInLastWeek = currentFilter.MaxAveragePriceInLastWeekPercentFromLowestPrice == null ?
-                    null : lowestPrice / 100 * currentFilter.MaxAveragePriceInLastWeekPercentFromLowestPrice;
-
-                if (minCountOfSalesInLastWeek == null || countOfSalesInLastWeek >= minCountOfSalesInLastWeek)
-                {
-                    if (maxCountOfSalesInLastWeek == null || countOfSalesInLastWeek <= maxCountOfSalesInLastWeek)
-                    {
-                        if (minAveragePriceInLastWeek == null || averagePriceInLastWeek >= minAveragePriceInLastWeek)
-                        {
-                            if (maxAveragePriceInLastWeek == null || averagePriceInLastWeek <= maxAveragePriceInLastWeek)
-                            {
-                                sortMarketItems.Add(marketItem);
-                            }
-                        }
-                    }
-                }
-
-                count++;
-                Console.WriteLine(count + " from " + marketItems.Count);
             }
 
-            return sortMarketItems;
+            return countOfSalesInLastWeek;
         }
-    
-        private List<ProfitableMarketItem> GetProfitableMarketItems(List<MarketItem> marketItems)
+
+        private static double GetAveragePriceInLastWeek(List<ItemRecentSale> itemRecentSales)
         {
-            int count = 0;
+            double averagePriceInLastWeek = 0;
+            List<double> itemPriceOfSales = new List<double>();
+            foreach (ItemRecentSale recentSale in itemRecentSales)
+            {
+                if (recentSale.SoldAt >= DateTime.Now.AddDays(-7))
+                {
+                    itemPriceOfSales.Add(recentSale.Price);
+                }
+            }
+
+            if (itemPriceOfSales.Count > 0)
+            {
+                averagePriceInLastWeek = itemPriceOfSales.Average();
+            }
+
+            return averagePriceInLastWeek;
+        }
+
+        private static List<ItemOnSale> GetItemsOnSale(SearchFilter searchFilter, string marketHashName)
+        {
+            List<ItemOnSale> itemsOnSale = InventoryOnSale.GetInventoryOnSale(searchFilter.App, 1, marketHashName, 0, 0, InventoryOnSale.SortBy.Price,
+                    InventoryOnSale.SortOrder.Asc, InventoryOnSale.ThreeChoices.NotImportant, InventoryOnSale.ThreeChoices.NotImportant,
+                    InventoryOnSale.ThreeChoices.NotImportant, InventoryOnSale.ResultsPerPage.R30, InventoryOnSale.ThreeChoices.NotImportant);
+            return itemsOnSale;
+        }
+
+        private static List<ProfitableMarketItem> GetProfitableMarketItems(List<MarketItem> marketItems, SearchFilter searchFilter)
+        {
+            if (marketItems == null || marketItems.Count == 0)
+            {
+                return new List<ProfitableMarketItem>();
+            }
+
+            ConsoleLog.WriteInfo($"Start get profitable market items. Count - {marketItems.Count}");
+            ConsoleLog.StartProgeress("Get profitable market items");
+            int done = 1;
+
             List<ProfitableMarketItem> profitableMarketItems = new List<ProfitableMarketItem>();
             foreach (MarketItem marketItem in marketItems)
             {
-                string name = marketItem.MarketHashName;
-                List<ItemOnSale> ItemsOnSale = InventoryOnSale.GetInventoryOnSale(currentFilter.App, 1, name, 0, 0, InventoryOnSale.SortBy.Price,
-                    InventoryOnSale.SortOrder.Asc, InventoryOnSale.ThreeChoices.NotImportant, InventoryOnSale.ThreeChoices.NotImportant,
-                    InventoryOnSale.ThreeChoices.NotImportant, InventoryOnSale.ResultsPerPage.R30, InventoryOnSale.ThreeChoices.NotImportant);
+                ConsoleLog.WriteProgress("Get profitable market items", done, marketItems.Count);
+                done++;
 
-                ItemOnSale itemOnSale = ItemsOnSale[0];
-                ItemOnSale itemOnSale3 = null;
-                if (ItemsOnSale.Count >= 3)
+                string marketHashName = marketItem.MarketHashName;
+                List<ItemOnSale> itemsOnSale = GetItemsOnSale(searchFilter, marketHashName);
+                if (itemsOnSale.Count < 2)
                 {
-                    itemOnSale3 = ItemsOnSale[2];
+                    continue;
                 }
+                ItemOnSale itemOnSale1 = itemsOnSale[0];
+                ItemOnSale itemOnSale2 = itemsOnSale[1];
 
-                if (itemOnSale3 == null || itemOnSale3.Price >= itemOnSale.Price * 1.05)
+                int sellPricePercentFromBuyPrice = searchFilter.MinAveragePriceInLastWeekPercentFromLowestPrice == null ? 110
+                    : Math.Max(110, searchFilter.MinAveragePriceInLastWeekPercentFromLowestPrice.Value);
+                double sellPrice = itemOnSale1.Price / 100 * sellPricePercentFromBuyPrice;
+                if (itemOnSale2.Price > sellPrice + 0.01)
                 {
-                    if (!itemOnSale.IsMine)
-                    {
-                        if (itemOnSale.Price <= marketItem.LowestPrice)
-                        {
-                            ProfitableMarketItem profitableMarketItem = new ProfitableMarketItem
-                            {
-                                Name = marketItem.MarketHashName,
-                                Id = itemOnSale.ItemId,
-                                BuyPrice = itemOnSale.Price,
-                                SellPrice = Math.Round(itemOnSale.Price / 100 * (currentFilter.MinAveragePriceInLastWeekPercentFromLowestPrice == null ?
-                                110 : (double)currentFilter.MinAveragePriceInLastWeekPercentFromLowestPrice), 2)
-                            };
-                            profitableMarketItems.Add(profitableMarketItem);
-                        }
-                    }
+                    sellPrice = itemOnSale2.Price - 0.01;
                 }
+                sellPrice = Math.Round(sellPrice, 2);
 
-                count++;
-                Console.WriteLine(count + " from " + marketItems.Count);
+                ProfitableMarketItem profitableMarketItem = new ProfitableMarketItem
+                {
+                    App = searchFilter.App,
+                    Name = marketItem.MarketHashName,
+                    Id = itemOnSale1.ItemId,
+                    BuyPrice = itemOnSale1.Price,
+                    SellPrice = sellPrice
+                };
+                profitableMarketItems.Add(profitableMarketItem);
             }
 
+            ConsoleLog.WriteInfo($"End get profitable market items. Count - {marketItems.Count}");
+
             return profitableMarketItems;
+        }
+
+
+        private static List<MarketItem> SortProfitableItems(List<MarketItem> marketItems, SearchFilter searchFilter)
+        {
+            List<MarketItem> sortedMarketItems = marketItems;
+
+            ConsoleLog.WriteInfo("Start sort profitable items");
+
+            sortedMarketItems = SortByTotalItems(sortedMarketItems, searchFilter);
+            sortedMarketItems = SortByLowestPrice(sortedMarketItems, searchFilter);
+            sortedMarketItems = SortByHighestPrice(sortedMarketItems, searchFilter);
+            sortedMarketItems = SortByCumulativePrice(sortedMarketItems, searchFilter);
+            sortedMarketItems = SortByRecentAveragePrice(sortedMarketItems, searchFilter);
+            sortedMarketItems = SortByRecentSales(sortedMarketItems, searchFilter);
+            sortedMarketItems = SortByItemsOnSale(sortedMarketItems, searchFilter);
+
+            ConsoleLog.WriteInfo("End sort profitable items");
+
+            return sortedMarketItems;
+        }
+
+        private static List<MarketItem> SortByTotalItems(List<MarketItem> marketItems, SearchFilter searchFilter)
+        {
+            if (marketItems == null || marketItems.Count == 0)
+            {
+                return new List<MarketItem>();
+            }
+
+            int? minTotalItems = searchFilter.MinTotalItems;
+            int? maxTotalItems = searchFilter.MaxTotalItems;
+
+            ConsoleLog.WriteInfo($"Start sort by total items. Count - {marketItems.Count}");
+            ConsoleLog.StartProgeress("Sort by total items");
+            int done = 1;
+
+            List<MarketItem> sortedMarketItems = new List<MarketItem>();
+            foreach (MarketItem marketItem in marketItems)
+            {
+                ConsoleLog.WriteProgress("Sort by total items", done, marketItems.Count);
+                done++;
+
+                int totalItems = marketItem.TotalItems;
+
+                if (minTotalItems != null && totalItems < minTotalItems)
+                {
+                    continue;
+                }
+                if (maxTotalItems != null && totalItems > maxTotalItems)
+                {
+                    continue;
+                }
+
+                sortedMarketItems.Add(marketItem);
+            }
+
+            ConsoleLog.WriteInfo($"End sort by total items. Count - {sortedMarketItems.Count}");
+
+            return sortedMarketItems;
+        }
+
+        private static List<MarketItem> SortByLowestPrice(List<MarketItem> marketItems, SearchFilter searchFilter)
+        {
+            if (marketItems == null || marketItems.Count == 0)
+            {
+                return new List<MarketItem>();
+            }
+
+            double? minLowestPrice = searchFilter.MinLowestPrice;
+            double? maxLowestPrice = searchFilter.MaxLowestPrice;
+
+            ConsoleLog.WriteInfo($"Start sort by lowest price. Count - {marketItems.Count}");
+            ConsoleLog.StartProgeress("Sort by lowest price");
+            int done = 1;
+
+            List<MarketItem> sortedMarketItems = new List<MarketItem>();
+            foreach (MarketItem marketItem in marketItems)
+            {
+                ConsoleLog.WriteProgress("Sort by lowest price", done, marketItems.Count);
+                done++;
+
+                double lowestPrice = marketItem.LowestPrice;
+
+                if (minLowestPrice != null && lowestPrice < minLowestPrice)
+                {
+                    continue;
+                }
+                if (maxLowestPrice != null && lowestPrice > maxLowestPrice)
+                {
+                    continue;
+                }
+
+                sortedMarketItems.Add(marketItem);
+            }
+
+            ConsoleLog.WriteInfo($"End sort by lowest price. Count - {sortedMarketItems.Count}");
+
+            return sortedMarketItems;
+        }
+
+        private static List<MarketItem> SortByHighestPrice(List<MarketItem> marketItems, SearchFilter searchFilter)
+        {
+            if (marketItems == null || marketItems.Count == 0)
+            {
+                return new List<MarketItem>();
+            }
+
+            ConsoleLog.WriteInfo($"Start sort by highest price. Count - {marketItems.Count}");
+            ConsoleLog.StartProgeress("Sort by highest price");
+            int done = 1;
+
+            List<MarketItem> sortedMarketItems = new List<MarketItem>();
+            foreach (MarketItem marketItem in marketItems)
+            {
+                ConsoleLog.WriteProgress("Sort by highest price", done, marketItems.Count);
+                done++;
+
+                double lowestPrice = marketItem.LowestPrice;
+                double highestPrice = marketItem.HighestPrice;
+
+                double? minHighestPrice = searchFilter.MinHighestPricePercentFromLowestPrice == null ? null
+                    : lowestPrice / 100 * searchFilter.MinHighestPricePercentFromLowestPrice;
+                double? maxHighestPrice = searchFilter.MaxHighestPricePercentFromLowestPrice == null ? null
+                    : lowestPrice / 100 * searchFilter.MaxHighestPricePercentFromLowestPrice;
+
+                if (minHighestPrice != null && highestPrice < minHighestPrice)
+                {
+                    continue;
+                }
+                if (maxHighestPrice != null && highestPrice > maxHighestPrice)
+                {
+                    continue;
+                }
+
+                sortedMarketItems.Add(marketItem);
+            }
+
+            ConsoleLog.WriteInfo($"End sort by highest price. Count - {sortedMarketItems.Count}");
+
+            return sortedMarketItems;
+        }
+
+        private static List<MarketItem> SortByCumulativePrice(List<MarketItem> marketItems, SearchFilter searchFilter)
+        {
+            if (marketItems == null || marketItems.Count == 0)
+            {
+                return new List<MarketItem>();
+            }
+
+            ConsoleLog.WriteInfo($"Start sort by cumulative price. Count - {marketItems.Count}");
+            ConsoleLog.StartProgeress("Sort by cumulative price");
+            int done = 1;
+
+            List<MarketItem> sortedMarketItems = new List<MarketItem>();
+            foreach (MarketItem marketItem in marketItems)
+            {
+                ConsoleLog.WriteProgress("Sort by cumulative price", done, marketItems.Count);
+                done++;
+
+                int totalItems = marketItem.TotalItems;
+                double lowestPrice = marketItem.LowestPrice;
+                double cumulativePrice = marketItem.CumulativePrice;
+                double lowestCumulativePrice = totalItems * lowestPrice;
+
+                double? minCumulativePrice = searchFilter.MinCumulativePricePercentFromLowestCumulativePrice == null ? null 
+                    : lowestCumulativePrice / 100 * searchFilter.MinCumulativePricePercentFromLowestCumulativePrice;
+                double? maxCumulativePrice = searchFilter.MaxCumulativePricePercentFromLowestCumulativePrice == null ? null 
+                    : lowestCumulativePrice / 100 * searchFilter.MaxCumulativePricePercentFromLowestCumulativePrice;
+
+                if (minCumulativePrice != null && cumulativePrice < minCumulativePrice)
+                {
+                    continue;
+                }
+                if (maxCumulativePrice != null && cumulativePrice > maxCumulativePrice)
+                {
+                    continue;
+                }
+
+                sortedMarketItems.Add(marketItem);
+            }
+
+            ConsoleLog.WriteInfo($"End sort by cumulative price. Count - {sortedMarketItems.Count}");
+
+            return sortedMarketItems;
+        }
+
+        private static List<MarketItem> SortByRecentAveragePrice(List<MarketItem> marketItems, SearchFilter searchFilter)
+        {
+            if (marketItems == null || marketItems.Count == 0)
+            {
+                return new List<MarketItem>();
+            }
+
+            ConsoleLog.WriteInfo($"Start sort by recent average price. Count - {marketItems.Count}");
+            ConsoleLog.StartProgeress("Sort by recent average price");
+            int done = 1;
+
+            List<MarketItem> sortedMarketItems = new List<MarketItem>();
+            foreach (MarketItem marketItem in marketItems)
+            {
+                ConsoleLog.WriteProgress("Sort by recent average price", done, marketItems.Count);
+                done++;
+
+                double lowestPrice = marketItem.LowestPrice;
+                double recentAveragePrice = marketItem.RecentAveragePrice;
+
+                double? minRecentAveragePrice = searchFilter.MinRecentAveragePricePercentFromLowestPrice == null ? null 
+                    : lowestPrice / 100 * searchFilter.MinRecentAveragePricePercentFromLowestPrice;
+                double? maxRecentAveragePrice = searchFilter.MaxRecentAveragePricePercentFromLowestPrice == null ? null 
+                    : lowestPrice / 100 * searchFilter.MaxRecentAveragePricePercentFromLowestPrice;
+
+                if (minRecentAveragePrice != null && recentAveragePrice < minRecentAveragePrice)
+                {
+                    continue;
+                }
+                if (maxRecentAveragePrice != null && recentAveragePrice > maxRecentAveragePrice)
+                {
+                    continue;
+                }
+
+                sortedMarketItems.Add(marketItem);
+            }
+
+            ConsoleLog.WriteInfo($"End sort by recent average price. Count - {sortedMarketItems.Count}");
+
+            return sortedMarketItems;
+        }
+
+        private static List<MarketItem> SortByRecentSales(List<MarketItem> marketItems, SearchFilter searchFilter)
+        {
+            if (marketItems == null || marketItems.Count == 0)
+            {
+                return new List<MarketItem>();
+            }
+
+            int? minCountOfSalesInLastWeek = searchFilter.MinCountOfSalesInLastWeek;
+            int? maxCountOfSalesInLastWeek = searchFilter.MaxCountOfSalesInLastWeek;
+
+            ConsoleLog.WriteInfo($"Start sort by recent sales. Count - {marketItems.Count}");
+            ConsoleLog.StartProgeress("Sort by recent sales");
+            int done = 1;
+
+            List<MarketItem> sortedMarketItems = new List<MarketItem>();
+            foreach (MarketItem marketItem in marketItems)
+            {
+                ConsoleLog.WriteProgress("Sort by recent sales", done, marketItems.Count);
+                done++;
+
+                string marketHashName = marketItem.MarketHashName;
+                double lowestPrice = marketItem.LowestPrice;
+                List<ItemRecentSale> itemRecentSales = GetItemRecentSales(searchFilter, marketHashName);
+                int countOfSalesInLastWeek = GetCountOfSalesInLastWeek(itemRecentSales);
+                double averagePriceInLastWeek = GetAveragePriceInLastWeek(itemRecentSales);
+
+                double? minAveragePriceInLastWeek = searchFilter.MinAveragePriceInLastWeekPercentFromLowestPrice == null ? null 
+                    : lowestPrice / 100 * searchFilter.MinAveragePriceInLastWeekPercentFromLowestPrice;
+                double? maxAveragePriceInLastWeek = searchFilter.MaxAveragePriceInLastWeekPercentFromLowestPrice == null ? null 
+                    : lowestPrice / 100 * searchFilter.MaxAveragePriceInLastWeekPercentFromLowestPrice;
+
+                if (minCountOfSalesInLastWeek != null && countOfSalesInLastWeek < minCountOfSalesInLastWeek)
+                {
+                    continue;
+                }
+                if (maxCountOfSalesInLastWeek != null && countOfSalesInLastWeek > maxCountOfSalesInLastWeek)
+                {
+                    continue;
+                }
+                if (minAveragePriceInLastWeek != null && averagePriceInLastWeek < minAveragePriceInLastWeek)
+                {
+                    continue;
+                }
+                if (maxAveragePriceInLastWeek != null && averagePriceInLastWeek > maxAveragePriceInLastWeek)
+                {
+                    continue;
+                }
+
+                sortedMarketItems.Add(marketItem);
+            }
+
+            ConsoleLog.WriteInfo($"End sort by recent sales. Count - {sortedMarketItems.Count}");
+
+            return sortedMarketItems;
+        }
+
+        private static List<MarketItem> SortByItemsOnSale(List<MarketItem> marketItems, SearchFilter searchFilter)
+        {
+            if (marketItems == null || marketItems.Count == 0)
+            {
+                return new List<MarketItem>();
+            }
+
+            ConsoleLog.WriteInfo($"Start sort by items on sale. Count - {marketItems.Count}");
+            ConsoleLog.StartProgeress("Sort by items on sale");
+            int done = 1;
+
+            List<MarketItem> sortedMarketItems = new List<MarketItem>();
+            foreach (MarketItem marketItem in marketItems)
+            {
+                ConsoleLog.WriteProgress("Sort by items on sale", done, marketItems.Count);
+                done++;
+
+                string marketHashName = marketItem.MarketHashName;
+                List<ItemOnSale> itemsOnSale = GetItemsOnSale(searchFilter, marketHashName);
+                if (itemsOnSale.Count < 3)
+                {
+                    continue;
+                }
+                ItemOnSale itemOnSale1 = itemsOnSale[0];
+                ItemOnSale itemOnSale3 = itemsOnSale[2];
+
+                if (itemOnSale3.Price < itemOnSale1.Price * 1.05)
+                {
+                    continue;
+                }
+                if (itemOnSale1.IsMine)
+                {
+                    continue;
+                }
+                if (itemOnSale1.Price > marketItem.LowestPrice)
+                {
+                    continue;
+                }
+
+                sortedMarketItems.Add(marketItem);
+            }
+
+            ConsoleLog.WriteInfo($"End sort by items on sale. Count - {sortedMarketItems.Count}");
+
+            return sortedMarketItems;
         }
     }
 }

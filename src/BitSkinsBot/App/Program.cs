@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Collections.Generic;
 using BitSkinsBot.FastMarketAnalize;
 
@@ -10,24 +11,60 @@ namespace BitSkinsBot
         {
             Bot.Initilize.InitilizeAccount();
 
-            Filters filters = new Filters();
-            foreach (Filter filter in filters.filters)
+            MySearchFilters mySearchFilters = new MySearchFilters();
+            List<ProfitableMarketItem> boughtItems = new List<ProfitableMarketItem>();
+            List<ProfitableMarketItem> currentOnSaleItems = new List<ProfitableMarketItem>();
+            while (true)
             {
-                ProfitableItems profitableItems = new ProfitableItems(filter);
-                List<ProfitableMarketItem> profitableMarketItems = profitableItems.GetProfitableItems();
-
-                Console.WriteLine("PROFITABLE ITEMS");
-                foreach (ProfitableMarketItem profitableMarketItem in profitableMarketItems)
+                foreach (SearchFilter filter in mySearchFilters.searchFilters)
                 {
-                    Console.WriteLine("Name: " + profitableMarketItem.Name);
-                    Console.WriteLine("ID: " + profitableMarketItem.Id);
-                    Console.WriteLine("Buy price: " + profitableMarketItem.BuyPrice);
-                    Console.WriteLine("Sell price: " + profitableMarketItem.SellPrice);
-                    Console.WriteLine();
-                }
-            }
+                    List<ProfitableMarketItem> profitableMarketItems = ProfitableItems.GetProfitableItems(filter);
+                    if (profitableMarketItems == null || profitableMarketItems.Count == 0)
+                    {
+                        continue;
+                    }
 
-            Console.ReadKey();
+                    double availableBalance = BitSkinsApi.Balance.CurrentBalance.GetAccountBalance().AvailableBalance;
+                    double balance = availableBalance / 5;
+                    foreach (ProfitableMarketItem marketItem in profitableMarketItems)
+                    {
+                        if (marketItem.BuyPrice > balance)
+                        {
+                            continue;
+                        }
+
+                        if (balance <= 0)
+                        {
+                            break;
+                        }
+
+                        List<ProfitableMarketItem> items = Purchase.BuyItems(new List<ProfitableMarketItem> { marketItem });
+                        foreach (ProfitableMarketItem item in items)
+                        {
+                            boughtItems.Add(item);
+                            balance -= item.BuyPrice;
+                        }
+                    }
+                }
+
+                List<ProfitableMarketItem> relistedItems = new List<ProfitableMarketItem>();
+                foreach (ProfitableMarketItem marketItem in boughtItems)
+                {
+                    List<ProfitableMarketItem> items = RelistForSale.RelistItems(new List<ProfitableMarketItem> { marketItem });
+                    foreach (ProfitableMarketItem item in items)
+                    {
+                        relistedItems.Add(marketItem);
+                    }
+                }
+                foreach (ProfitableMarketItem marketItem in relistedItems)
+                {
+                    boughtItems.Remove(marketItem);
+                    currentOnSaleItems.Add(marketItem);
+                }
+
+                Console.WriteLine("Sleep 1 hour");
+                Thread.Sleep(60 * 60 * 1000);
+            }
         }
     }
 }

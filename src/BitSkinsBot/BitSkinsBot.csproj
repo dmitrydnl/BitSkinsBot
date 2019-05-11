@@ -13,6 +13,7 @@
     <Folder Include="App\" />
     <Folder Include="App\Bot\" />
     <Folder Include="App\FastMarketAnalize\" />
+    <Folder Include="App\Log\" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="filters.json" />
