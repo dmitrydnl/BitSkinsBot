@@ -62,6 +62,14 @@ namespace BitSkinsBot.EventsLog
             ClearConsoleForegroundColor();
         }
 
+        internal static void WriteSellItem(AppId.AppName app, string name, double sellPrice)
+        {
+            Console.ForegroundColor = ConsoleColor.Green;
+            ConsoleWriteLineWithDate($"{name} ({app}) sold for {sellPrice}$");
+            ClearConsoleForegroundColor();
+        }
+
+
         private static void ConsoleWriteLineWithDate(string message)
         {
             Console.WriteLine(DateTime.Now + " : " + message);

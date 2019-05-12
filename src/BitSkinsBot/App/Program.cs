@@ -14,6 +14,7 @@ namespace BitSkinsBot
             MySearchFilters mySearchFilters = new MySearchFilters();
             List<ProfitableMarketItem> boughtItems = new List<ProfitableMarketItem>();
             List<ProfitableMarketItem> currentOnSaleItems = new List<ProfitableMarketItem>();
+            List<ProfitableMarketItem> soldItems = new List<ProfitableMarketItem>();
             while (true)
             {
                 foreach (SearchFilter filter in mySearchFilters.searchFilters)
@@ -47,19 +48,18 @@ namespace BitSkinsBot
                     }
                 }
 
-                List<ProfitableMarketItem> relistedItems = new List<ProfitableMarketItem>();
-                foreach (ProfitableMarketItem marketItem in boughtItems)
-                {
-                    List<ProfitableMarketItem> items = RelistForSale.RelistItems(new List<ProfitableMarketItem> { marketItem });
-                    foreach (ProfitableMarketItem item in items)
-                    {
-                        relistedItems.Add(marketItem);
-                    }
-                }
+                List<ProfitableMarketItem> relistedItems = RelistForSale.RelistItems(boughtItems);
                 foreach (ProfitableMarketItem marketItem in relistedItems)
                 {
                     boughtItems.Remove(marketItem);
                     currentOnSaleItems.Add(marketItem);
+                }
+
+                List<ProfitableMarketItem> recentlySoldItems = SoldItems.GetSoldItems(currentOnSaleItems);
+                foreach (ProfitableMarketItem marketItem in recentlySoldItems)
+                {
+                    currentOnSaleItems.Remove(marketItem);
+                    soldItems.Add(marketItem);
                 }
 
                 ConsoleLog.WriteInfo("Sleep 1 hour");
