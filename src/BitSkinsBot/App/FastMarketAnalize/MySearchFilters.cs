@@ -16,27 +16,27 @@ namespace BitSkinsBot.FastMarketAnalize
         private void InitilizeFilters()
         {
             string jsonText = System.IO.File.ReadAllText("filters.json");
-            dynamic jsonObject = JsonConvert.DeserializeObject<dynamic>(jsonText);
+            dynamic filters = JsonConvert.DeserializeObject<dynamic>(jsonText).Filters;
 
-            foreach (dynamic jsonFilter in jsonObject.Filters)
+            foreach (dynamic filter in filters)
             {
                 SearchFilter searchFilter = new SearchFilter
                 {
-                    App = (AppId.AppName)jsonFilter.App,
-                    MinTotalItems = jsonFilter.MinTotalItems,
-                    MaxTotalItems = jsonFilter.MaxTotalItems,
-                    MinLowestPrice = jsonFilter.MinLowestPrice,
-                    MaxLowestPrice = jsonFilter.MaxLowestPrice,
-                    MinHighestPricePercentFromLowestPrice = jsonFilter.MinHighestPricePercentFromLowestPrice,
-                    MaxHighestPricePercentFromLowestPrice = jsonFilter.MaxHighestPricePercentFromLowestPrice,
-                    MinCumulativePricePercentFromLowestCumulativePrice = jsonFilter.MinCumulativePricePercentFromLowestCumulativePrice,
-                    MaxCumulativePricePercentFromLowestCumulativePrice = jsonFilter.MaxCumulativePricePercentFromLowestCumulativePrice,
-                    MinRecentAveragePricePercentFromLowestPrice = jsonFilter.MinRecentAveragePricePercentFromLowestPrice,
-                    MaxRecentAveragePricePercentFromLowestPrice = jsonFilter.MaxRecentAveragePricePercentFromLowestPrice,
-                    MinCountOfSalesInLastWeek = jsonFilter.MinCountOfSalesInLastWeek,
-                    MaxCountOfSalesInLastWeek = jsonFilter.MaxCountOfSalesInLastWeek,
-                    MinAveragePriceInLastWeekPercentFromLowestPrice = jsonFilter.MinAveragePriceInLastWeekPercentFromLowestPrice,
-                    MaxAveragePriceInLastWeekPercentFromLowestPrice = jsonFilter.MaxAveragePriceInLastWeekPercentFromLowestPrice
+                    App = (AppId.AppName)filter.App,
+                    MinTotalItems = filter.MinTotalItems,
+                    MaxTotalItems = filter.MaxTotalItems,
+                    MinLowestPrice = filter.MinLowestPrice,
+                    MaxLowestPrice = filter.MaxLowestPrice,
+                    MinHighestPricePercentFromLowestPrice = filter.MinHighestPricePercentFromLowestPrice,
+                    MaxHighestPricePercentFromLowestPrice = filter.MaxHighestPricePercentFromLowestPrice,
+                    MinCumulativePricePercentFromLowestCumulativePrice = filter.MinCumulativePricePercentFromLowestCumulativePrice,
+                    MaxCumulativePricePercentFromLowestCumulativePrice = filter.MaxCumulativePricePercentFromLowestCumulativePrice,
+                    MinRecentAveragePricePercentFromLowestPrice = filter.MinRecentAveragePricePercentFromLowestPrice,
+                    MaxRecentAveragePricePercentFromLowestPrice = filter.MaxRecentAveragePricePercentFromLowestPrice,
+                    MinCountOfSalesInLastWeek = filter.MinCountOfSalesInLastWeek,
+                    MaxCountOfSalesInLastWeek = filter.MaxCountOfSalesInLastWeek,
+                    MinAveragePriceInLastWeekPercentFromLowestPrice = filter.MinAveragePriceInLastWeekPercentFromLowestPrice,
+                    MaxAveragePriceInLastWeekPercentFromLowestPrice = filter.MaxAveragePriceInLastWeekPercentFromLowestPrice
                 };
 
                 searchFilters.Add(searchFilter);

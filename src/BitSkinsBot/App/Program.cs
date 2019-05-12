@@ -1,7 +1,7 @@
-﻿using System;
-using System.Threading;
+﻿using System.Threading;
 using System.Collections.Generic;
 using BitSkinsBot.FastMarketAnalize;
+using BitSkinsBot.EventsLog;
 
 namespace BitSkinsBot
 {
@@ -62,7 +62,7 @@ namespace BitSkinsBot
                     currentOnSaleItems.Add(marketItem);
                 }
 
-                Console.WriteLine("Sleep 1 hour");
+                ConsoleLog.WriteInfo("Sleep 1 hour");
                 Thread.Sleep(60 * 60 * 1000);
             }
         }

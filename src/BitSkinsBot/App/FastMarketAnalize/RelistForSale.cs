@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using BitSkinsApi.Market;
-using BitSkinsBot.Log;
+using BitSkinsBot.EventsLog;
 
 namespace BitSkinsBot.FastMarketAnalize
 {
@@ -9,7 +9,8 @@ namespace BitSkinsBot.FastMarketAnalize
     {
         internal static List<ProfitableMarketItem> RelistItems(List<ProfitableMarketItem> profitableMarketItems)
         {
-            ConsoleLog.WriteInfo("Start relist items");
+            ConsoleLog.WriteInfo($"Start relist items. Count to relist - {profitableMarketItems.Count}");
+
             List<ProfitableMarketItem> relistedItems = new List<ProfitableMarketItem>();
             foreach (ProfitableMarketItem marketItem in profitableMarketItems)
             {
@@ -30,11 +31,14 @@ namespace BitSkinsBot.FastMarketAnalize
                 if (successfullyRelistedItems != null)
                 {
                     ConsoleLog.WriteItemOnSale(app, marketItem.Name, marketItem.SellPrice);
+
                     marketItem.Id = successfullyRelistedItems[0].ItemId;
                     marketItem.OfferedForSaleDate = DateTime.Now;
                     relistedItems.Add(marketItem);
                 }
             }
+
+            ConsoleLog.WriteInfo($"End relist items. Successful relist - {relistedItems.Count}");
 
             return relistedItems;
         }
