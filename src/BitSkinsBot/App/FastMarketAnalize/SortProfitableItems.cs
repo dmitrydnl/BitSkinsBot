@@ -209,7 +209,11 @@ namespace BitSkinsBot.FastMarketAnalize
                 done++;
 
                 double lowestPrice = marketItem.LowestPrice;
-                double recentAveragePrice = marketItem.RecentAveragePrice;
+                double? recentAveragePrice = marketItem.RecentAveragePrice;
+                if (recentAveragePrice == null)
+                {
+                    continue;
+                }
 
                 double? minRecentAveragePrice = searchFilter.MinRecentAveragePricePercentFromLowestPrice == null ? null
                     : lowestPrice / 100 * searchFilter.MinRecentAveragePricePercentFromLowestPrice;
