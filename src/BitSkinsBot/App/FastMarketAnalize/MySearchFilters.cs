@@ -36,7 +36,9 @@ namespace BitSkinsBot.FastMarketAnalize
                     MinCountOfSalesInLastWeek = filter.MinCountOfSalesInLastWeek,
                     MaxCountOfSalesInLastWeek = filter.MaxCountOfSalesInLastWeek,
                     MinAveragePriceInLastWeekPercentFromLowestPrice = filter.MinAveragePriceInLastWeekPercentFromLowestPrice,
-                    MaxAveragePriceInLastWeekPercentFromLowestPrice = filter.MaxAveragePriceInLastWeekPercentFromLowestPrice
+                    MaxAveragePriceInLastWeekPercentFromLowestPrice = filter.MaxAveragePriceInLastWeekPercentFromLowestPrice,
+                    MinItemsOnSale = filter.MinItemsOnSale,
+                    MaxItemsOnSale = filter.MaxItemsOnSale
                 };
 
                 searchFilters.Add(searchFilter);
@@ -61,5 +63,7 @@ namespace BitSkinsBot.FastMarketAnalize
         internal int? MaxCountOfSalesInLastWeek { get; set; }
         internal int? MinAveragePriceInLastWeekPercentFromLowestPrice { get; set; }
         internal int? MaxAveragePriceInLastWeekPercentFromLowestPrice { get; set; }
+        internal int? MinItemsOnSale { get; set; }
+        internal int? MaxItemsOnSale { get; set; }
     }
 }

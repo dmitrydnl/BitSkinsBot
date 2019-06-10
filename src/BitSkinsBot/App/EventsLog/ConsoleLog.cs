@@ -5,11 +5,17 @@ namespace BitSkinsBot.EventsLog
 {
     internal static class ConsoleLog
     {
-        private const ConsoleColor DEFAULT_FOREGROUND_COLOR = ConsoleColor.White;
+        private const ConsoleColor DEFAULT_TEXT_COLOR = ConsoleColor.White;
+        private const ConsoleColor INFO_TEXT_COLOR = ConsoleColor.Cyan;
+        private const ConsoleColor ERROR_TEXT_COLOR = ConsoleColor.Red;
+        private const ConsoleColor PROGRESS_TEXT_COLOR = ConsoleColor.Gray;
+        private const ConsoleColor BUY_ITEM_TEXT_COLOR = ConsoleColor.Magenta;
+        private const ConsoleColor SELL_ITEM_TEXT_COLOR = ConsoleColor.Green;
+        private const ConsoleColor ITEM_ON_SALE_TEXT_COLOR = ConsoleColor.Yellow;
 
-        internal static void StartProgeress(string text)
+        internal static void StartProgress(string text)
         {
-            Console.ForegroundColor = ConsoleColor.Gray;
+            Console.ForegroundColor = PROGRESS_TEXT_COLOR;
             ConsoleWriteLineWithDate($"{text}. Progress - (0%)");
             ClearConsoleForegroundColor();
         }
@@ -19,7 +25,7 @@ namespace BitSkinsBot.EventsLog
             Console.SetCursorPosition(0, Console.CursorTop - 1);
             ClearCurrentConsoleLine();
 
-            Console.ForegroundColor = ConsoleColor.Gray;
+            Console.ForegroundColor = PROGRESS_TEXT_COLOR;
             if (done >= total)
             {
                 ConsoleWriteLineWithDate($"{text}. Complete");
@@ -35,14 +41,14 @@ namespace BitSkinsBot.EventsLog
 
         internal static void WriteInfo(string textInfo)
         {
-            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.ForegroundColor = INFO_TEXT_COLOR;
             ConsoleWriteLineWithDate(textInfo);
             ClearConsoleForegroundColor();
         }
 
         internal static void WriteError(string textError)
         {
-            Console.ForegroundColor = ConsoleColor.Red;
+            Console.ForegroundColor = ERROR_TEXT_COLOR;
             ConsoleWriteLineWithDate(textError);
             ClearConsoleForegroundColor();
         }
@@ -50,21 +56,21 @@ namespace BitSkinsBot.EventsLog
 
         internal static void WriteItemOnSale(AppId.AppName app, string name, double sellPrice)
         {
-            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.ForegroundColor = ITEM_ON_SALE_TEXT_COLOR;
             ConsoleWriteLineWithDate($"{name} ({app}) on sale for {sellPrice}$");
             ClearConsoleForegroundColor();
         }
 
         internal static void WriteBuyItem(AppId.AppName app, string name, double buyPrice)
         {
-            Console.ForegroundColor = ConsoleColor.Magenta;
+            Console.ForegroundColor = BUY_ITEM_TEXT_COLOR;
             ConsoleWriteLineWithDate($"{name} ({app}) bought for {buyPrice}$");
             ClearConsoleForegroundColor();
         }
 
         internal static void WriteSellItem(AppId.AppName app, string name, double sellPrice)
         {
-            Console.ForegroundColor = ConsoleColor.Green;
+            Console.ForegroundColor = SELL_ITEM_TEXT_COLOR;
             ConsoleWriteLineWithDate($"{name} ({app}) sold for {sellPrice}$");
             ClearConsoleForegroundColor();
         }
@@ -77,7 +83,7 @@ namespace BitSkinsBot.EventsLog
 
         private static void ClearConsoleForegroundColor()
         {
-            Console.ForegroundColor = DEFAULT_FOREGROUND_COLOR;
+            Console.ForegroundColor = DEFAULT_TEXT_COLOR;
         }
 
         private static void ClearCurrentConsoleLine()

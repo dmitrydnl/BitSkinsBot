@@ -37,7 +37,7 @@ namespace BitSkinsBot.FastMarketAnalize
             }
 
             ConsoleLog.WriteInfo($"Start get profitable market items. Count before getting - {marketItems.Count}");
-            ConsoleLog.StartProgeress("Get profitable market items");
+            ConsoleLog.StartProgress("Get profitable market items");
             int done = 1;
 
             List<ProfitableMarketItem> profitableMarketItems = new List<ProfitableMarketItem>();
