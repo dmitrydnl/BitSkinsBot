@@ -337,3 +337,4 @@ ASALocalRun/
 
 src/BitSkinsBot/account_data.json
 src/BitSkinsBot/filters.json
+src/TelegramBot/bot_data.json
