@@ -9,7 +9,6 @@ namespace BitSkinsBot
     {
         static void Main(string[] args)
         {
-            TelegramBot.Bot.Initilize();
             Bot.Initilize.InitilizeAccount();
 
             MySearchFilters mySearchFilters = new MySearchFilters();

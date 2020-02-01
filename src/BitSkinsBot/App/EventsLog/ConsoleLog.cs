@@ -1,6 +1,5 @@
 ﻿using System;
 using BitSkinsApi.Market;
-using TelegramBot;
 
 namespace BitSkinsBot.EventsLog
 {
@@ -50,7 +49,6 @@ namespace BitSkinsBot.EventsLog
         internal static void WriteError(string textError)
         {
             Console.ForegroundColor = ERROR_TEXT_COLOR;
-            TelegramBot.Bot.SendNotification(textError);
             ConsoleWriteLineWithDate(textError);
             ClearConsoleForegroundColor();
         }
@@ -60,7 +58,6 @@ namespace BitSkinsBot.EventsLog
         {
             Console.ForegroundColor = ITEM_ON_SALE_TEXT_COLOR;
             string notification = $"{name} ({app}) on sale for {sellPrice}$";
-            TelegramBot.Bot.SendNotification(notification);
             ConsoleWriteLineWithDate(notification);
             ClearConsoleForegroundColor();
         }
@@ -69,7 +66,6 @@ namespace BitSkinsBot.EventsLog
         {
             Console.ForegroundColor = BUY_ITEM_TEXT_COLOR;
             string notification = $"{name} ({app}) bought for {buyPrice}$";
-            TelegramBot.Bot.SendNotification(notification);
             ConsoleWriteLineWithDate(notification);
             ClearConsoleForegroundColor();
         }
@@ -78,7 +74,6 @@ namespace BitSkinsBot.EventsLog
         {
             Console.ForegroundColor = SELL_ITEM_TEXT_COLOR;
             string notification = $"{name} ({app}) sold for {sellPrice}$";
-            TelegramBot.Bot.SendNotification(notification);
             ConsoleWriteLineWithDate(notification);
             ClearConsoleForegroundColor();
         }
