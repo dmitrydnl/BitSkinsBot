@@ -11,7 +11,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App\" />
-    <Folder Include="App\Bot\" />
     <Folder Include="App\FastMarketAnalize\" />
     <Folder Include="App\EventsLog\" />
   </ItemGroup>
