@@ -7,12 +7,12 @@ namespace BitSkinsBot.FastMarketAnalize
 {
     internal static class Purchase
     {
-        internal static List<ProfitableMarketItem> BuyItems(List<ProfitableMarketItem> profitableMarketItems)
+        internal static List<MarketItem> BuyItems(List<MarketItem> profitableMarketItems)
         {
             ConsoleLog.WriteInfo($"Start buy items. Count to buy - {profitableMarketItems.Count}");
 
-            List<ProfitableMarketItem> boughtItems = new List<ProfitableMarketItem>();
-            foreach (ProfitableMarketItem marketItem in profitableMarketItems)
+            List<MarketItem> boughtItems = new List<MarketItem>();
+            foreach (MarketItem marketItem in profitableMarketItems)
             {
                 AppId.AppName app = marketItem.App;
                 List<string> itemId = new List<string> { marketItem.Id };

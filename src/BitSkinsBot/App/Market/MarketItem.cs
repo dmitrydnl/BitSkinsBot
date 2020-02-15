@@ -7,41 +7,41 @@ namespace BitSkinsBot.FastMarketAnalize
 {
     internal static class ProfitableItems
     {
-        internal static List<ProfitableMarketItem> GetProfitableItems(SortFilter searchFilter)
+        internal static List<MarketItem> GetProfitableItems(SortFilter searchFilter)
         {
             ConsoleLog.WriteInfo("Start get profitable items");
 
-            List<MarketItem> marketItems = GetMarketItems(searchFilter);
+            List<BitSkinsApi.Market.MarketItem> marketItems = GetMarketItems(searchFilter);
             marketItems = SortProfitableItems.Sort(marketItems, searchFilter);
-            List<ProfitableMarketItem> profitableMarketItems = GetProfitableMarketItems(marketItems, searchFilter);
+            List<MarketItem> profitableMarketItems = GetProfitableMarketItems(marketItems, searchFilter);
 
             ConsoleLog.WriteInfo("End get profitable items");
 
             return profitableMarketItems;
         }
 
-        private static List<MarketItem> GetMarketItems(SortFilter searchFilter)
+        private static List<BitSkinsApi.Market.MarketItem> GetMarketItems(SortFilter searchFilter)
         {
-            List<MarketItem> marketItems = MarketData.GetMarketData(searchFilter.App);
+            List<BitSkinsApi.Market.MarketItem> marketItems = MarketData.GetMarketData(searchFilter.App);
 
             ConsoleLog.WriteInfo($"Count market items - {marketItems.Count}");
 
             return marketItems;
         }
 
-        private static List<ProfitableMarketItem> GetProfitableMarketItems(List<MarketItem> marketItems, SortFilter searchFilter)
+        private static List<MarketItem> GetProfitableMarketItems(List<BitSkinsApi.Market.MarketItem> marketItems, SortFilter searchFilter)
         {
             if (marketItems == null || marketItems.Count == 0)
             {
-                return new List<ProfitableMarketItem>();
+                return new List<MarketItem>();
             }
 
             ConsoleLog.WriteInfo($"Start get profitable market items. Count before getting - {marketItems.Count}");
             ConsoleLog.StartProgress("Get profitable market items");
             int done = 1;
 
-            List<ProfitableMarketItem> profitableMarketItems = new List<ProfitableMarketItem>();
-            foreach (MarketItem marketItem in marketItems)
+            List<MarketItem> profitableMarketItems = new List<MarketItem>();
+            foreach (BitSkinsApi.Market.MarketItem marketItem in marketItems)
             {
                 ConsoleLog.WriteProgress("Get profitable market items", done, marketItems.Count);
                 done++;
@@ -64,7 +64,7 @@ namespace BitSkinsBot.FastMarketAnalize
                 }
                 sellPrice = Math.Round(sellPrice, 2);
 
-                ProfitableMarketItem profitableMarketItem = new ProfitableMarketItem
+                MarketItem profitableMarketItem = new MarketItem
                 {
                     App = searchFilter.App,
                     Name = marketItem.MarketHashName,

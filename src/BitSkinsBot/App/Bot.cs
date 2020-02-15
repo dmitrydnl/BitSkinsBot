@@ -7,23 +7,33 @@ namespace BitSkinsBot
 {
     internal class Bot
     {
+        private List<SortFilter> searchFilters;
+        private List<MarketItem> boughtItems;
+        private List<MarketItem> onSaleItems;
+        private List<MarketItem> soldItems;
+
         internal Bot()
         {
             AccountData accountData = AccountData.GetInstance();
             BitSkinsApi.Account.AccountData.SetupAccount(accountData.ApiKey, accountData.SecretCode);
+            InitializeData();
+        }
+
+        private void InitializeData()
+        {
+            searchFilters = SortFilter.GetFilters();
+            boughtItems = new List<MarketItem>();
+            soldItems = new List<MarketItem>();
+            onSaleItems = new List<MarketItem>();
         }
 
         internal void Start()
         {
-            List<SortFilter> mySearchFilters = SortFilter.GetFilters();
-            List<ProfitableMarketItem> boughtItems = new List<ProfitableMarketItem>();
-            List<ProfitableMarketItem> currentOnSaleItems = new List<ProfitableMarketItem>();
-            List<ProfitableMarketItem> soldItems = new List<ProfitableMarketItem>();
             while (true)
             {
-                foreach (SortFilter filter in mySearchFilters)
+                foreach (SortFilter filter in searchFilters)
                 {
-                    List<ProfitableMarketItem> profitableMarketItems = ProfitableItems.GetProfitableItems(filter);
+                    List<MarketItem> profitableMarketItems = ProfitableItems.GetProfitableItems(filter);
                     if (profitableMarketItems == null || profitableMarketItems.Count == 0)
                     {
                         continue;
@@ -31,7 +41,7 @@ namespace BitSkinsBot
 
                     double availableBalance = BitSkinsApi.Balance.CurrentBalance.GetAccountBalance().AvailableBalance;
                     double balance = availableBalance / 5;
-                    foreach (ProfitableMarketItem marketItem in profitableMarketItems)
+                    foreach (MarketItem marketItem in profitableMarketItems)
                     {
                         if (marketItem.BuyPrice > balance)
                         {
@@ -43,8 +53,8 @@ namespace BitSkinsBot
                             break;
                         }
 
-                        List<ProfitableMarketItem> items = Purchase.BuyItems(new List<ProfitableMarketItem> { marketItem });
-                        foreach (ProfitableMarketItem item in items)
+                        List<MarketItem> items = Purchase.BuyItems(new List<MarketItem> { marketItem });
+                        foreach (MarketItem item in items)
                         {
                             boughtItems.Add(item);
                             balance -= item.BuyPrice;
@@ -52,17 +62,17 @@ namespace BitSkinsBot
                     }
                 }
 
-                List<ProfitableMarketItem> relistedItems = RelistForSale.RelistItems(boughtItems);
-                foreach (ProfitableMarketItem marketItem in relistedItems)
+                List<MarketItem> relistedItems = RelistForSale.RelistItems(boughtItems);
+                foreach (MarketItem marketItem in relistedItems)
                 {
                     boughtItems.Remove(marketItem);
-                    currentOnSaleItems.Add(marketItem);
+                    onSaleItems.Add(marketItem);
                 }
 
-                List<ProfitableMarketItem> recentlySoldItems = SoldItems.GetSoldItems(currentOnSaleItems);
-                foreach (ProfitableMarketItem marketItem in recentlySoldItems)
+                List<MarketItem> recentlySoldItems = SoldItems.GetSoldItems(onSaleItems);
+                foreach (MarketItem marketItem in recentlySoldItems)
                 {
-                    currentOnSaleItems.Remove(marketItem);
+                    onSaleItems.Remove(marketItem);
                     soldItems.Add(marketItem);
                 }
 

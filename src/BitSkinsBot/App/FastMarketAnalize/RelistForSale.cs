@@ -7,12 +7,12 @@ namespace BitSkinsBot.FastMarketAnalize
 {
     internal static class RelistForSale
     {
-        internal static List<ProfitableMarketItem> RelistItems(List<ProfitableMarketItem> profitableMarketItems)
+        internal static List<MarketItem> RelistItems(List<MarketItem> profitableMarketItems)
         {
             ConsoleLog.WriteInfo($"Start relist items. Count to relist - {profitableMarketItems.Count}");
 
-            List<ProfitableMarketItem> relistedItems = new List<ProfitableMarketItem>();
-            foreach (ProfitableMarketItem marketItem in profitableMarketItems)
+            List<MarketItem> relistedItems = new List<MarketItem>();
+            foreach (MarketItem marketItem in profitableMarketItems)
             {
                 AppId.AppName app = marketItem.App;
                 List<string> itemId = new List<string> { marketItem.Id };

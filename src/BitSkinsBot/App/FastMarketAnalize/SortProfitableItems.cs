@@ -9,9 +9,9 @@ namespace BitSkinsBot.FastMarketAnalize
 {
     internal static class SortProfitableItems
     {
-        internal static List<MarketItem> Sort(List<MarketItem> marketItems, SortFilter searchFilter)
+        internal static List<BitSkinsApi.Market.MarketItem> Sort(List<BitSkinsApi.Market.MarketItem> marketItems, SortFilter searchFilter)
         {
-            List<MarketItem> sortedMarketItems = marketItems;
+            List<BitSkinsApi.Market.MarketItem> sortedMarketItems = marketItems;
 
             ConsoleLog.WriteInfo($"Start sort profitable items. Count before sort - {sortedMarketItems.Count}");
 
@@ -29,11 +29,11 @@ namespace BitSkinsBot.FastMarketAnalize
             return sortedMarketItems;
         }
 
-        private static List<MarketItem> SortByTotalItems(List<MarketItem> marketItems, SortFilter searchFilter)
+        private static List<BitSkinsApi.Market.MarketItem> SortByTotalItems(List<BitSkinsApi.Market.MarketItem> marketItems, SortFilter searchFilter)
         {
             if (marketItems == null || marketItems.Count == 0)
             {
-                return new List<MarketItem>();
+                return new List<BitSkinsApi.Market.MarketItem>();
             }
 
             int? minTotalItems = searchFilter.MinTotalItems;
@@ -43,8 +43,8 @@ namespace BitSkinsBot.FastMarketAnalize
             ConsoleLog.StartProgress("Sort by total items");
             int done = 1;
 
-            List<MarketItem> sortedMarketItems = new List<MarketItem>();
-            foreach (MarketItem marketItem in marketItems)
+            List<BitSkinsApi.Market.MarketItem> sortedMarketItems = new List<BitSkinsApi.Market.MarketItem>();
+            foreach (BitSkinsApi.Market.MarketItem marketItem in marketItems)
             {
                 ConsoleLog.WriteProgress("Sort by total items", done, marketItems.Count);
                 done++;
@@ -68,11 +68,11 @@ namespace BitSkinsBot.FastMarketAnalize
             return sortedMarketItems;
         }
 
-        private static List<MarketItem> SortByLowestPrice(List<MarketItem> marketItems, SortFilter searchFilter)
+        private static List<BitSkinsApi.Market.MarketItem> SortByLowestPrice(List<BitSkinsApi.Market.MarketItem> marketItems, SortFilter searchFilter)
         {
             if (marketItems == null || marketItems.Count == 0)
             {
-                return new List<MarketItem>();
+                return new List<BitSkinsApi.Market.MarketItem>();
             }
 
             double? minLowestPrice = searchFilter.MinLowestPrice;
@@ -82,8 +82,8 @@ namespace BitSkinsBot.FastMarketAnalize
             ConsoleLog.StartProgress("Sort by lowest price");
             int done = 1;
 
-            List<MarketItem> sortedMarketItems = new List<MarketItem>();
-            foreach (MarketItem marketItem in marketItems)
+            List<BitSkinsApi.Market.MarketItem> sortedMarketItems = new List<BitSkinsApi.Market.MarketItem>();
+            foreach (BitSkinsApi.Market.MarketItem marketItem in marketItems)
             {
                 ConsoleLog.WriteProgress("Sort by lowest price", done, marketItems.Count);
                 done++;
@@ -107,19 +107,19 @@ namespace BitSkinsBot.FastMarketAnalize
             return sortedMarketItems;
         }
 
-        private static List<MarketItem> SortByHighestPrice(List<MarketItem> marketItems, SortFilter searchFilter)
+        private static List<BitSkinsApi.Market.MarketItem> SortByHighestPrice(List<BitSkinsApi.Market.MarketItem> marketItems, SortFilter searchFilter)
         {
             if (marketItems == null || marketItems.Count == 0)
             {
-                return new List<MarketItem>();
+                return new List<BitSkinsApi.Market.MarketItem>();
             }
 
             ConsoleLog.WriteInfo($"Start sort by highest price. Count before sort - {marketItems.Count}");
             ConsoleLog.StartProgress("Sort by highest price");
             int done = 1;
 
-            List<MarketItem> sortedMarketItems = new List<MarketItem>();
-            foreach (MarketItem marketItem in marketItems)
+            List<BitSkinsApi.Market.MarketItem> sortedMarketItems = new List<BitSkinsApi.Market.MarketItem>();
+            foreach (BitSkinsApi.Market.MarketItem marketItem in marketItems)
             {
                 ConsoleLog.WriteProgress("Sort by highest price", done, marketItems.Count);
                 done++;
@@ -149,19 +149,19 @@ namespace BitSkinsBot.FastMarketAnalize
             return sortedMarketItems;
         }
 
-        private static List<MarketItem> SortByCumulativePrice(List<MarketItem> marketItems, SortFilter searchFilter)
+        private static List<BitSkinsApi.Market.MarketItem> SortByCumulativePrice(List<BitSkinsApi.Market.MarketItem> marketItems, SortFilter searchFilter)
         {
             if (marketItems == null || marketItems.Count == 0)
             {
-                return new List<MarketItem>();
+                return new List<BitSkinsApi.Market.MarketItem>();
             }
 
             ConsoleLog.WriteInfo($"Start sort by cumulative price. Count before sort - {marketItems.Count}");
             ConsoleLog.StartProgress("Sort by cumulative price");
             int done = 1;
 
-            List<MarketItem> sortedMarketItems = new List<MarketItem>();
-            foreach (MarketItem marketItem in marketItems)
+            List<BitSkinsApi.Market.MarketItem> sortedMarketItems = new List<BitSkinsApi.Market.MarketItem>();
+            foreach (BitSkinsApi.Market.MarketItem marketItem in marketItems)
             {
                 ConsoleLog.WriteProgress("Sort by cumulative price", done, marketItems.Count);
                 done++;
@@ -193,19 +193,19 @@ namespace BitSkinsBot.FastMarketAnalize
             return sortedMarketItems;
         }
 
-        private static List<MarketItem> SortByRecentAveragePrice(List<MarketItem> marketItems, SortFilter searchFilter)
+        private static List<BitSkinsApi.Market.MarketItem> SortByRecentAveragePrice(List<BitSkinsApi.Market.MarketItem> marketItems, SortFilter searchFilter)
         {
             if (marketItems == null || marketItems.Count == 0)
             {
-                return new List<MarketItem>();
+                return new List<BitSkinsApi.Market.MarketItem>();
             }
 
             ConsoleLog.WriteInfo($"Start sort by recent average price. Count before sort - {marketItems.Count}");
             ConsoleLog.StartProgress("Sort by recent average price");
             int done = 1;
 
-            List<MarketItem> sortedMarketItems = new List<MarketItem>();
-            foreach (MarketItem marketItem in marketItems)
+            List<BitSkinsApi.Market.MarketItem> sortedMarketItems = new List<BitSkinsApi.Market.MarketItem>();
+            foreach (BitSkinsApi.Market.MarketItem marketItem in marketItems)
             {
                 ConsoleLog.WriteProgress("Sort by recent average price", done, marketItems.Count);
                 done++;
@@ -239,11 +239,11 @@ namespace BitSkinsBot.FastMarketAnalize
             return sortedMarketItems;
         }
 
-        private static List<MarketItem> SortByRecentSales(List<MarketItem> marketItems, SortFilter searchFilter)
+        private static List<BitSkinsApi.Market.MarketItem> SortByRecentSales(List<BitSkinsApi.Market.MarketItem> marketItems, SortFilter searchFilter)
         {
             if (marketItems == null || marketItems.Count == 0)
             {
-                return new List<MarketItem>();
+                return new List<BitSkinsApi.Market.MarketItem>();
             }
 
             int? minCountOfSalesInLastWeek = searchFilter.MinCountOfSalesInLastWeek;
@@ -253,8 +253,8 @@ namespace BitSkinsBot.FastMarketAnalize
             ConsoleLog.StartProgress("Sort by recent sales");
             int done = 1;
 
-            List<MarketItem> sortedMarketItems = new List<MarketItem>();
-            foreach (MarketItem marketItem in marketItems)
+            List<BitSkinsApi.Market.MarketItem> sortedMarketItems = new List<BitSkinsApi.Market.MarketItem>();
+            foreach (BitSkinsApi.Market.MarketItem marketItem in marketItems)
             {
                 ConsoleLog.WriteProgress("Sort by recent sales", done, marketItems.Count);
                 done++;
@@ -295,19 +295,19 @@ namespace BitSkinsBot.FastMarketAnalize
             return sortedMarketItems;
         }
 
-        private static List<MarketItem> SortByItemsOnSale(List<MarketItem> marketItems, SortFilter searchFilter)
+        private static List<BitSkinsApi.Market.MarketItem> SortByItemsOnSale(List<BitSkinsApi.Market.MarketItem> marketItems, SortFilter searchFilter)
         {
             if (marketItems == null || marketItems.Count == 0)
             {
-                return new List<MarketItem>();
+                return new List<BitSkinsApi.Market.MarketItem>();
             }
 
             ConsoleLog.WriteInfo($"Start sort by items on sale. Count before sort - {marketItems.Count}");
             ConsoleLog.StartProgress("Sort by items on sale");
             int done = 1;
 
-            List<MarketItem> sortedMarketItems = new List<MarketItem>();
-            foreach (MarketItem marketItem in marketItems)
+            List<BitSkinsApi.Market.MarketItem> sortedMarketItems = new List<BitSkinsApi.Market.MarketItem>();
+            foreach (BitSkinsApi.Market.MarketItem marketItem in marketItems)
             {
                 ConsoleLog.WriteProgress("Sort by items on sale", done, marketItems.Count);
                 done++;
@@ -342,11 +342,11 @@ namespace BitSkinsBot.FastMarketAnalize
             return sortedMarketItems;
         }
 
-        private static List<MarketItem> SortByCountInInventory(List<MarketItem> marketItems, SortFilter searchFilter)
+        private static List<BitSkinsApi.Market.MarketItem> SortByCountInInventory(List<BitSkinsApi.Market.MarketItem> marketItems, SortFilter searchFilter)
         {
             if (marketItems == null || marketItems.Count == 0)
             {
-                return new List<MarketItem>();
+                return new List<BitSkinsApi.Market.MarketItem>();
             }
 
             int? minItemsOnSale = searchFilter.MinItemsOnSale;
@@ -357,8 +357,8 @@ namespace BitSkinsBot.FastMarketAnalize
             ConsoleLog.StartProgress("Sort by count in inventory");
             int done = 1;
 
-            List<MarketItem> sortedMarketItems = new List<MarketItem>();
-            foreach (MarketItem marketItem in marketItems)
+            List<BitSkinsApi.Market.MarketItem> sortedMarketItems = new List<BitSkinsApi.Market.MarketItem>();
+            foreach (BitSkinsApi.Market.MarketItem marketItem in marketItems)
             {
                 ConsoleLog.WriteProgress("Sort by count in inventory", done, marketItems.Count);
                 done++;

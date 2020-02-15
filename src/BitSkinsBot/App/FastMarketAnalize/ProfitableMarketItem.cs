@@ -3,7 +3,7 @@ using BitSkinsApi.Market;
 
 namespace BitSkinsBot.FastMarketAnalize
 {
-    internal class ProfitableMarketItem
+    internal class MarketItem
     {
         internal AppId.AppName App { get; set; }
         internal string Name { get; set; }
