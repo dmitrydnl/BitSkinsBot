@@ -5,18 +5,18 @@ using BitSkinsBot.EventsLog;
 
 namespace BitSkinsBot.FastMarketAnalize
 {
-    internal static class RelistForSale
+    internal class RelistForSale : IRelistForSale
     {
-        internal static List<MarketItem> RelistItems(List<MarketItem> profitableMarketItems)
+        public List<MarketItem> RelistItemsForSale(List<MarketItem> marketItems)
         {
-            ConsoleLog.WriteInfo($"Start relist items. Count to relist - {profitableMarketItems.Count}");
+            ConsoleLog.WriteInfo($"Start relist items. Count to relist - {marketItems.Count}");
 
             List<MarketItem> relistedItems = new List<MarketItem>();
-            foreach (MarketItem marketItem in profitableMarketItems)
+            foreach (MarketItem item in marketItems)
             {
-                AppId.AppName app = marketItem.App;
-                List<string> itemId = new List<string> { marketItem.Id };
-                List<double> itemPrice = new List<double> { marketItem.SellPrice };
+                AppId.AppName app = item.App;
+                List<string> itemId = new List<string> { item.Id };
+                List<double> itemPrice = new List<double> { item.SellPrice };
 
                 List<RelistedItem> successfullyRelistedItems = null;
                 try
@@ -30,11 +30,11 @@ namespace BitSkinsBot.FastMarketAnalize
 
                 if (successfullyRelistedItems != null)
                 {
-                    ConsoleLog.WriteItemOnSale(app, marketItem.Name, marketItem.SellPrice);
+                    ConsoleLog.WriteItemOnSale(app, item.Name, item.SellPrice);
 
-                    marketItem.Id = successfullyRelistedItems[0].ItemId;
-                    marketItem.OfferedForSaleDate = DateTime.Now;
-                    relistedItems.Add(marketItem);
+                    item.Id = successfullyRelistedItems[0].ItemId;
+                    item.OfferedForSaleDate = DateTime.Now;
+                    relistedItems.Add(item);
                 }
             }
 

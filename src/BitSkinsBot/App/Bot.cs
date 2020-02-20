@@ -7,6 +7,8 @@ namespace BitSkinsBot
 {
     internal class Bot
     {
+        private IRelistForSale relistForSale;
+
         private List<SortFilter> searchFilters;
         private List<MarketItem> boughtItems;
         private List<MarketItem> onSaleItems;
@@ -16,7 +18,13 @@ namespace BitSkinsBot
         {
             AccountData accountData = AccountData.GetInstance();
             BitSkinsApi.Account.AccountData.SetupAccount(accountData.ApiKey, accountData.SecretCode);
+            InitializeModules();
             InitializeData();
+        }
+
+        private void InitializeModules()
+        {
+            relistForSale = new RelistForSale();
         }
 
         private void InitializeData()
@@ -62,12 +70,7 @@ namespace BitSkinsBot
                     }
                 }
 
-                List<MarketItem> relistedItems = RelistForSale.RelistItems(boughtItems);
-                foreach (MarketItem marketItem in relistedItems)
-                {
-                    boughtItems.Remove(marketItem);
-                    onSaleItems.Add(marketItem);
-                }
+                RelistItemsForSale();
 
                 List<MarketItem> recentlySoldItems = SoldItems.GetSoldItems(onSaleItems);
                 foreach (MarketItem marketItem in recentlySoldItems)
@@ -78,6 +81,16 @@ namespace BitSkinsBot
 
                 ConsoleLog.WriteInfo("Sleep 1 hour");
                 Thread.Sleep(60 * 60 * 1000);
+            }
+        }
+
+        private void RelistItemsForSale()
+        {
+            List<MarketItem> relistedItems = relistForSale.RelistItemsForSale(boughtItems);
+            foreach (MarketItem item in relistedItems)
+            {
+                boughtItems.Remove(item);
+                onSaleItems.Add(item);
             }
         }
     }

@@ -15,6 +15,7 @@
     <Folder Include="App\EventsLog\" />
     <Folder Include="App\Market\" />
     <Folder Include="App\Market\Sort\" />
+    <Folder Include="App\Market\Sale\" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="filters.json" />
