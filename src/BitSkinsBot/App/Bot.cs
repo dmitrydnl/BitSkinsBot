@@ -8,6 +8,7 @@ namespace BitSkinsBot
     internal class Bot
     {
         private IRelistForSale relistForSale;
+        private IPurchase purchase;
 
         private List<SortFilter> searchFilters;
         private List<MarketItem> boughtItems;
@@ -25,6 +26,7 @@ namespace BitSkinsBot
         private void InitializeModules()
         {
             relistForSale = new RelistForSale();
+            purchase = new Purchase();
         }
 
         private void InitializeData()
@@ -61,12 +63,7 @@ namespace BitSkinsBot
                             break;
                         }
 
-                        List<MarketItem> items = Purchase.BuyItems(new List<MarketItem> { marketItem });
-                        foreach (MarketItem item in items)
-                        {
-                            boughtItems.Add(item);
-                            balance -= item.BuyPrice;
-                        }
+                        balance -= PurchaseItem(marketItem);
                     }
                 }
 
@@ -82,6 +79,19 @@ namespace BitSkinsBot
                 ConsoleLog.WriteInfo("Sleep 1 hour");
                 Thread.Sleep(60 * 60 * 1000);
             }
+        }
+
+        private double PurchaseItem(MarketItem marketItem)
+        {
+            double price = 0;
+            List<MarketItem> items = purchase.PurchaseItems(new List<MarketItem> { marketItem });
+            foreach (MarketItem item in items)
+            {
+                boughtItems.Add(item);
+                price += item.BuyPrice;
+            }
+
+            return price;
         }
 
         private void RelistItemsForSale()

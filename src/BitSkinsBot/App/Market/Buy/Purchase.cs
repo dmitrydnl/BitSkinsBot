@@ -5,18 +5,18 @@ using BitSkinsBot.EventsLog;
 
 namespace BitSkinsBot.FastMarketAnalize
 {
-    internal static class Purchase
+    internal class Purchase : IPurchase
     {
-        internal static List<MarketItem> BuyItems(List<MarketItem> profitableMarketItems)
+        public List<MarketItem> PurchaseItems(List<MarketItem> marketItems)
         {
-            ConsoleLog.WriteInfo($"Start buy items. Count to buy - {profitableMarketItems.Count}");
+            ConsoleLog.WriteInfo($"Start buy items. Count to buy - {marketItems.Count}");
 
             List<MarketItem> boughtItems = new List<MarketItem>();
-            foreach (MarketItem marketItem in profitableMarketItems)
+            foreach (MarketItem item in marketItems)
             {
-                AppId.AppName app = marketItem.App;
-                List<string> itemId = new List<string> { marketItem.Id };
-                List<double> itemPrice = new List<double> { marketItem.BuyPrice };
+                AppId.AppName app = item.App;
+                List<string> itemId = new List<string> { item.Id };
+                List<double> itemPrice = new List<double> { item.BuyPrice };
 
                 List<BoughtItem> successfullyBoughtItems = null;
                 try
@@ -30,12 +30,12 @@ namespace BitSkinsBot.FastMarketAnalize
 
                 if (successfullyBoughtItems != null)
                 {
-                    ConsoleLog.WriteBuyItem(app, marketItem.Name, marketItem.BuyPrice);
+                    ConsoleLog.WriteBuyItem(app, item.Name, item.BuyPrice);
 
-                    marketItem.Id = successfullyBoughtItems[0].ItemId;
-                    marketItem.WithdrawableAt = successfullyBoughtItems[0].WithdrawableAt;
-                    marketItem.BuyDate = DateTime.Now;
-                    boughtItems.Add(marketItem);
+                    item.Id = successfullyBoughtItems[0].ItemId;
+                    item.WithdrawableAt = successfullyBoughtItems[0].WithdrawableAt;
+                    item.BuyDate = DateTime.Now;
+                    boughtItems.Add(item);
                 }
             }
 

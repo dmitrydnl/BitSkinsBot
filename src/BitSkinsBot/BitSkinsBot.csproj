@@ -16,6 +16,7 @@
     <Folder Include="App\Market\" />
     <Folder Include="App\Market\Sort\" />
     <Folder Include="App\Market\Sale\" />
+    <Folder Include="App\Market\Buy\" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="filters.json" />
