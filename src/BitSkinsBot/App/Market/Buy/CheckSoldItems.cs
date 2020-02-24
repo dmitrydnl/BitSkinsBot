@@ -5,18 +5,18 @@ using BitSkinsBot.EventsLog;
 
 namespace BitSkinsBot.FastMarketAnalize
 {
-    internal static class SoldItems
+    internal class CheckSoldItems : ICheckSoldItems
     {
-        internal static List<MarketItem> GetSoldItems(List<MarketItem> profitableMarketItems)
+        public List<MarketItem> GetSoldItems(List<MarketItem> marketItems)
         {
-            ConsoleLog.WriteInfo($"Start getting sold items. Items for checking - {profitableMarketItems.Count}");
+            ConsoleLog.WriteInfo($"Start getting sold items. Items for checking - {marketItems.Count}");
 
             List<MarketItem> soldItems = new List<MarketItem>();
-            foreach (MarketItem marketItem in profitableMarketItems)
+            foreach (MarketItem item in marketItems)
             {
-                AppId.AppName app = marketItem.App;
-                DateTime offeredForSaleDate = marketItem.OfferedForSaleDate;
-                string itemId = marketItem.Id;
+                AppId.AppName app = item.App;
+                DateTime offeredForSaleDate = item.OfferedForSaleDate;
+                string itemId = item.Id;
 
                 List<SellHistoryRecord> sellHistoryRecords = null;
                 try
@@ -39,10 +39,10 @@ namespace BitSkinsBot.FastMarketAnalize
 
                         if (sellHistoryRecord.ItemId == itemId)
                         {
-                            ConsoleLog.WriteSellItem(app, marketItem.Name, marketItem.SellPrice);
+                            ConsoleLog.WriteSellItem(app, item.Name, item.SellPrice);
 
-                            marketItem.SaleDate = sellHistoryRecord.Time;
-                            soldItems.Add(marketItem);
+                            item.SaleDate = sellHistoryRecord.Time;
+                            soldItems.Add(item);
                             break;
                         }
                     }

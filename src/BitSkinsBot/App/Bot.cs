@@ -9,6 +9,7 @@ namespace BitSkinsBot
     {
         private IRelistForSale relistForSale;
         private IPurchase purchase;
+        private ICheckSoldItems checkSoldItems;
 
         private List<SortFilter> searchFilters;
         private List<MarketItem> boughtItems;
@@ -27,6 +28,7 @@ namespace BitSkinsBot
         {
             relistForSale = new RelistForSale();
             purchase = new Purchase();
+            checkSoldItems = new CheckSoldItems();
         }
 
         private void InitializeData()
@@ -68,13 +70,7 @@ namespace BitSkinsBot
                 }
 
                 RelistItemsForSale();
-
-                List<MarketItem> recentlySoldItems = SoldItems.GetSoldItems(onSaleItems);
-                foreach (MarketItem marketItem in recentlySoldItems)
-                {
-                    onSaleItems.Remove(marketItem);
-                    soldItems.Add(marketItem);
-                }
+                CheckSoldItems();
 
                 ConsoleLog.WriteInfo("Sleep 1 hour");
                 Thread.Sleep(60 * 60 * 1000);
@@ -101,6 +97,16 @@ namespace BitSkinsBot
             {
                 boughtItems.Remove(item);
                 onSaleItems.Add(item);
+            }
+        }
+
+        private void CheckSoldItems()
+        {
+            List<MarketItem> recentlySoldItems = checkSoldItems.GetSoldItems(onSaleItems);
+            foreach (MarketItem marketItem in recentlySoldItems)
+            {
+                onSaleItems.Remove(marketItem);
+                soldItems.Add(marketItem);
             }
         }
     }
