@@ -12,7 +12,7 @@ namespace BitSkinsBot.FastMarketAnalize
             ConsoleLog.WriteInfo("Start get profitable items");
 
             List<BitSkinsApi.Market.MarketItem> marketItems = GetMarketItems(searchFilter);
-            marketItems = SortProfitableItems.Sort(marketItems, searchFilter);
+            marketItems = SortItems.Sort(marketItems, searchFilter);
             List<MarketItem> profitableMarketItems = GetProfitableMarketItems(marketItems, searchFilter);
 
             ConsoleLog.WriteInfo("End get profitable items");
