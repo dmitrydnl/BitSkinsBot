@@ -9,7 +9,7 @@ namespace BitSkinsBot.FastMarketAnalize
 {
     internal static class SortProfitableItems
     {
-        internal static List<MarketItem> Sort(List<MarketItem> marketItems, SearchFilter searchFilter)
+        internal static List<MarketItem> Sort(List<MarketItem> marketItems, SortFilter searchFilter)
         {
             List<MarketItem> sortedMarketItems = marketItems;
 
@@ -29,7 +29,7 @@ namespace BitSkinsBot.FastMarketAnalize
             return sortedMarketItems;
         }
 
-        private static List<MarketItem> SortByTotalItems(List<MarketItem> marketItems, SearchFilter searchFilter)
+        private static List<MarketItem> SortByTotalItems(List<MarketItem> marketItems, SortFilter searchFilter)
         {
             if (marketItems == null || marketItems.Count == 0)
             {
@@ -68,7 +68,7 @@ namespace BitSkinsBot.FastMarketAnalize
             return sortedMarketItems;
         }
 
-        private static List<MarketItem> SortByLowestPrice(List<MarketItem> marketItems, SearchFilter searchFilter)
+        private static List<MarketItem> SortByLowestPrice(List<MarketItem> marketItems, SortFilter searchFilter)
         {
             if (marketItems == null || marketItems.Count == 0)
             {
@@ -107,7 +107,7 @@ namespace BitSkinsBot.FastMarketAnalize
             return sortedMarketItems;
         }
 
-        private static List<MarketItem> SortByHighestPrice(List<MarketItem> marketItems, SearchFilter searchFilter)
+        private static List<MarketItem> SortByHighestPrice(List<MarketItem> marketItems, SortFilter searchFilter)
         {
             if (marketItems == null || marketItems.Count == 0)
             {
@@ -149,7 +149,7 @@ namespace BitSkinsBot.FastMarketAnalize
             return sortedMarketItems;
         }
 
-        private static List<MarketItem> SortByCumulativePrice(List<MarketItem> marketItems, SearchFilter searchFilter)
+        private static List<MarketItem> SortByCumulativePrice(List<MarketItem> marketItems, SortFilter searchFilter)
         {
             if (marketItems == null || marketItems.Count == 0)
             {
@@ -193,7 +193,7 @@ namespace BitSkinsBot.FastMarketAnalize
             return sortedMarketItems;
         }
 
-        private static List<MarketItem> SortByRecentAveragePrice(List<MarketItem> marketItems, SearchFilter searchFilter)
+        private static List<MarketItem> SortByRecentAveragePrice(List<MarketItem> marketItems, SortFilter searchFilter)
         {
             if (marketItems == null || marketItems.Count == 0)
             {
@@ -239,7 +239,7 @@ namespace BitSkinsBot.FastMarketAnalize
             return sortedMarketItems;
         }
 
-        private static List<MarketItem> SortByRecentSales(List<MarketItem> marketItems, SearchFilter searchFilter)
+        private static List<MarketItem> SortByRecentSales(List<MarketItem> marketItems, SortFilter searchFilter)
         {
             if (marketItems == null || marketItems.Count == 0)
             {
@@ -295,7 +295,7 @@ namespace BitSkinsBot.FastMarketAnalize
             return sortedMarketItems;
         }
 
-        private static List<MarketItem> SortByItemsOnSale(List<MarketItem> marketItems, SearchFilter searchFilter)
+        private static List<MarketItem> SortByItemsOnSale(List<MarketItem> marketItems, SortFilter searchFilter)
         {
             if (marketItems == null || marketItems.Count == 0)
             {
@@ -342,7 +342,7 @@ namespace BitSkinsBot.FastMarketAnalize
             return sortedMarketItems;
         }
 
-        private static List<MarketItem> SortByCountInInventory(List<MarketItem> marketItems, SearchFilter searchFilter)
+        private static List<MarketItem> SortByCountInInventory(List<MarketItem> marketItems, SortFilter searchFilter)
         {
             if (marketItems == null || marketItems.Count == 0)
             {
@@ -391,7 +391,7 @@ namespace BitSkinsBot.FastMarketAnalize
         }
 
 
-        private static List<ItemRecentSale> GetItemRecentSales(SearchFilter searchFilter, string marketHashName)
+        private static List<ItemRecentSale> GetItemRecentSales(SortFilter searchFilter, string marketHashName)
         {
             List<ItemRecentSale> itemRecentSales = new List<ItemRecentSale>();
             for (int i = 1; i <= 5; i++)
@@ -440,7 +440,7 @@ namespace BitSkinsBot.FastMarketAnalize
             return averagePriceInLastWeek;
         }
 
-        private static List<ItemOnSale> GetItemsOnSale(SearchFilter searchFilter, string marketHashName)
+        private static List<ItemOnSale> GetItemsOnSale(SortFilter searchFilter, string marketHashName)
         {
             List<ItemOnSale> itemsOnSale = InventoryOnSale.GetInventoryOnSale(searchFilter.App, 1, marketHashName, 0, 0, InventoryOnSale.SortBy.Price,
                     InventoryOnSale.SortOrder.Asc, InventoryOnSale.ThreeChoices.NotImportant, InventoryOnSale.ThreeChoices.NotImportant,

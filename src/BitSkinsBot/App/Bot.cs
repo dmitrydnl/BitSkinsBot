@@ -15,13 +15,13 @@ namespace BitSkinsBot
 
         internal void Start()
         {
-            MySearchFilters mySearchFilters = new MySearchFilters();
+            List<SortFilter> mySearchFilters = SortFilter.GetFilters();
             List<ProfitableMarketItem> boughtItems = new List<ProfitableMarketItem>();
             List<ProfitableMarketItem> currentOnSaleItems = new List<ProfitableMarketItem>();
             List<ProfitableMarketItem> soldItems = new List<ProfitableMarketItem>();
             while (true)
             {
-                foreach (SearchFilter filter in mySearchFilters.searchFilters)
+                foreach (SortFilter filter in mySearchFilters)
                 {
                     List<ProfitableMarketItem> profitableMarketItems = ProfitableItems.GetProfitableItems(filter);
                     if (profitableMarketItems == null || profitableMarketItems.Count == 0)

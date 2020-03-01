@@ -7,7 +7,7 @@ namespace BitSkinsBot.FastMarketAnalize
 {
     internal static class ProfitableItems
     {
-        internal static List<ProfitableMarketItem> GetProfitableItems(SearchFilter searchFilter)
+        internal static List<ProfitableMarketItem> GetProfitableItems(SortFilter searchFilter)
         {
             ConsoleLog.WriteInfo("Start get profitable items");
 
@@ -20,7 +20,7 @@ namespace BitSkinsBot.FastMarketAnalize
             return profitableMarketItems;
         }
 
-        private static List<MarketItem> GetMarketItems(SearchFilter searchFilter)
+        private static List<MarketItem> GetMarketItems(SortFilter searchFilter)
         {
             List<MarketItem> marketItems = MarketData.GetMarketData(searchFilter.App);
 
@@ -29,7 +29,7 @@ namespace BitSkinsBot.FastMarketAnalize
             return marketItems;
         }
 
-        private static List<ProfitableMarketItem> GetProfitableMarketItems(List<MarketItem> marketItems, SearchFilter searchFilter)
+        private static List<ProfitableMarketItem> GetProfitableMarketItems(List<MarketItem> marketItems, SortFilter searchFilter)
         {
             if (marketItems == null || marketItems.Count == 0)
             {
@@ -80,7 +80,7 @@ namespace BitSkinsBot.FastMarketAnalize
             return profitableMarketItems;
         }
 
-        private static List<ItemOnSale> GetItemsOnSale(SearchFilter searchFilter, string marketHashName)
+        private static List<ItemOnSale> GetItemsOnSale(SortFilter searchFilter, string marketHashName)
         {
             List<ItemOnSale> itemsOnSale = InventoryOnSale.GetInventoryOnSale(searchFilter.App, 1, marketHashName, 0, 0, InventoryOnSale.SortBy.Price,
                     InventoryOnSale.SortOrder.Asc, InventoryOnSale.ThreeChoices.NotImportant, InventoryOnSale.ThreeChoices.NotImportant,
