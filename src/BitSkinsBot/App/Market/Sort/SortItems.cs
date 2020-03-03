@@ -10,6 +10,7 @@ namespace BitSkinsBot.FastMarketAnalize
     internal static class SortItems
     {
         private static ISortMethod sortByTotalItems;
+        private static ISortMethod sortByLowestPrice;
 
         internal static List<BitSkinsApi.Market.MarketItem> Sort(List<BitSkinsApi.Market.MarketItem> marketItems, SortFilter searchFilter)
         {
@@ -19,7 +20,10 @@ namespace BitSkinsBot.FastMarketAnalize
 
             sortByTotalItems = new SortByTotalItems(searchFilter);
             sortByTotalItems.Sort(sortedMarketItems);
-            sortedMarketItems = SortByLowestPrice(sortedMarketItems, searchFilter);
+
+            sortByLowestPrice = new SortByLowestPrice(searchFilter);
+            sortByLowestPrice.Sort(sortedMarketItems);
+
             sortedMarketItems = SortByHighestPrice(sortedMarketItems, searchFilter);
             sortedMarketItems = SortByCumulativePrice(sortedMarketItems, searchFilter);
             sortedMarketItems = SortByRecentAveragePrice(sortedMarketItems, searchFilter);
@@ -28,45 +32,6 @@ namespace BitSkinsBot.FastMarketAnalize
             sortedMarketItems = SortByCountInInventory(sortedMarketItems, searchFilter);
 
             ConsoleLog.WriteInfo($"End sort profitable items. Count after sort - {sortedMarketItems.Count}");
-
-            return sortedMarketItems;
-        }
-
-        private static List<BitSkinsApi.Market.MarketItem> SortByLowestPrice(List<BitSkinsApi.Market.MarketItem> marketItems, SortFilter searchFilter)
-        {
-            if (marketItems == null || marketItems.Count == 0)
-            {
-                return new List<BitSkinsApi.Market.MarketItem>();
-            }
-
-            double? minLowestPrice = searchFilter.MinLowestPrice;
-            double? maxLowestPrice = searchFilter.MaxLowestPrice;
-
-            ConsoleLog.WriteInfo($"Start sort by lowest price. Count before sort  - {marketItems.Count}");
-            ConsoleLog.StartProgress("Sort by lowest price");
-            int done = 1;
-
-            List<BitSkinsApi.Market.MarketItem> sortedMarketItems = new List<BitSkinsApi.Market.MarketItem>();
-            foreach (BitSkinsApi.Market.MarketItem marketItem in marketItems)
-            {
-                ConsoleLog.WriteProgress("Sort by lowest price", done, marketItems.Count);
-                done++;
-
-                double lowestPrice = marketItem.LowestPrice;
-
-                if (minLowestPrice != null && lowestPrice < minLowestPrice)
-                {
-                    continue;
-                }
-                if (maxLowestPrice != null && lowestPrice > maxLowestPrice)
-                {
-                    continue;
-                }
-
-                sortedMarketItems.Add(marketItem);
-            }
-
-            ConsoleLog.WriteInfo($"End sort by lowest price. Count after sort - {sortedMarketItems.Count}");
 
             return sortedMarketItems;
         }
