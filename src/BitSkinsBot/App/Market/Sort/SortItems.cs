@@ -11,6 +11,7 @@ namespace BitSkinsBot.FastMarketAnalize
     {
         private static ISortMethod sortByTotalItems;
         private static ISortMethod sortByLowestPrice;
+        private static ISortMethod sortByHighestPrice;
 
         internal static List<BitSkinsApi.Market.MarketItem> Sort(List<BitSkinsApi.Market.MarketItem> marketItems, SortFilter searchFilter)
         {
@@ -24,7 +25,9 @@ namespace BitSkinsBot.FastMarketAnalize
             sortByLowestPrice = new SortByLowestPrice(searchFilter);
             sortByLowestPrice.Sort(sortedMarketItems);
 
-            sortedMarketItems = SortByHighestPrice(sortedMarketItems, searchFilter);
+            sortByHighestPrice = new SortByHighestPrice(searchFilter);
+            sortByHighestPrice.Sort(sortedMarketItems);
+
             sortedMarketItems = SortByCumulativePrice(sortedMarketItems, searchFilter);
             sortedMarketItems = SortByRecentAveragePrice(sortedMarketItems, searchFilter);
             sortedMarketItems = SortByItemsOnSale(sortedMarketItems, searchFilter);
@@ -32,48 +35,6 @@ namespace BitSkinsBot.FastMarketAnalize
             sortedMarketItems = SortByCountInInventory(sortedMarketItems, searchFilter);
 
             ConsoleLog.WriteInfo($"End sort profitable items. Count after sort - {sortedMarketItems.Count}");
-
-            return sortedMarketItems;
-        }
-
-        private static List<BitSkinsApi.Market.MarketItem> SortByHighestPrice(List<BitSkinsApi.Market.MarketItem> marketItems, SortFilter searchFilter)
-        {
-            if (marketItems == null || marketItems.Count == 0)
-            {
-                return new List<BitSkinsApi.Market.MarketItem>();
-            }
-
-            ConsoleLog.WriteInfo($"Start sort by highest price. Count before sort - {marketItems.Count}");
-            ConsoleLog.StartProgress("Sort by highest price");
-            int done = 1;
-
-            List<BitSkinsApi.Market.MarketItem> sortedMarketItems = new List<BitSkinsApi.Market.MarketItem>();
-            foreach (BitSkinsApi.Market.MarketItem marketItem in marketItems)
-            {
-                ConsoleLog.WriteProgress("Sort by highest price", done, marketItems.Count);
-                done++;
-
-                double lowestPrice = marketItem.LowestPrice;
-                double highestPrice = marketItem.HighestPrice;
-
-                double? minHighestPrice = searchFilter.MinHighestPricePercentFromLowestPrice == null ? null
-                    : lowestPrice / 100 * searchFilter.MinHighestPricePercentFromLowestPrice;
-                double? maxHighestPrice = searchFilter.MaxHighestPricePercentFromLowestPrice == null ? null
-                    : lowestPrice / 100 * searchFilter.MaxHighestPricePercentFromLowestPrice;
-
-                if (minHighestPrice != null && highestPrice < minHighestPrice)
-                {
-                    continue;
-                }
-                if (maxHighestPrice != null && highestPrice > maxHighestPrice)
-                {
-                    continue;
-                }
-
-                sortedMarketItems.Add(marketItem);
-            }
-
-            ConsoleLog.WriteInfo($"End sort by highest price. Count after sort - {sortedMarketItems.Count}");
 
             return sortedMarketItems;
         }
