@@ -12,6 +12,7 @@ namespace BitSkinsBot.FastMarketAnalize
         private static ISortMethod sortByTotalItems;
         private static ISortMethod sortByLowestPrice;
         private static ISortMethod sortByHighestPrice;
+        private static ISortMethod sortByCumulativePrice;
 
         internal static List<BitSkinsApi.Market.MarketItem> Sort(List<BitSkinsApi.Market.MarketItem> marketItems, SortFilter searchFilter)
         {
@@ -20,65 +21,23 @@ namespace BitSkinsBot.FastMarketAnalize
             ConsoleLog.WriteInfo($"Start sort profitable items. Count before sort - {sortedMarketItems.Count}");
 
             sortByTotalItems = new SortByTotalItems(searchFilter);
-            sortByTotalItems.Sort(sortedMarketItems);
+            sortedMarketItems = sortByTotalItems.Sort(sortedMarketItems);
 
             sortByLowestPrice = new SortByLowestPrice(searchFilter);
-            sortByLowestPrice.Sort(sortedMarketItems);
+            sortedMarketItems = sortByLowestPrice.Sort(sortedMarketItems);
 
             sortByHighestPrice = new SortByHighestPrice(searchFilter);
-            sortByHighestPrice.Sort(sortedMarketItems);
+            sortedMarketItems = sortByHighestPrice.Sort(sortedMarketItems);
 
-            sortedMarketItems = SortByCumulativePrice(sortedMarketItems, searchFilter);
+            sortByCumulativePrice = new SortByCumulativePrice(searchFilter);
+            sortedMarketItems = sortByCumulativePrice.Sort(sortedMarketItems);
+
             sortedMarketItems = SortByRecentAveragePrice(sortedMarketItems, searchFilter);
             sortedMarketItems = SortByItemsOnSale(sortedMarketItems, searchFilter);
             sortedMarketItems = SortByRecentSales(sortedMarketItems, searchFilter);
             sortedMarketItems = SortByCountInInventory(sortedMarketItems, searchFilter);
 
             ConsoleLog.WriteInfo($"End sort profitable items. Count after sort - {sortedMarketItems.Count}");
-
-            return sortedMarketItems;
-        }
-
-        private static List<BitSkinsApi.Market.MarketItem> SortByCumulativePrice(List<BitSkinsApi.Market.MarketItem> marketItems, SortFilter searchFilter)
-        {
-            if (marketItems == null || marketItems.Count == 0)
-            {
-                return new List<BitSkinsApi.Market.MarketItem>();
-            }
-
-            ConsoleLog.WriteInfo($"Start sort by cumulative price. Count before sort - {marketItems.Count}");
-            ConsoleLog.StartProgress("Sort by cumulative price");
-            int done = 1;
-
-            List<BitSkinsApi.Market.MarketItem> sortedMarketItems = new List<BitSkinsApi.Market.MarketItem>();
-            foreach (BitSkinsApi.Market.MarketItem marketItem in marketItems)
-            {
-                ConsoleLog.WriteProgress("Sort by cumulative price", done, marketItems.Count);
-                done++;
-
-                int totalItems = marketItem.TotalItems;
-                double lowestPrice = marketItem.LowestPrice;
-                double cumulativePrice = marketItem.CumulativePrice;
-                double lowestCumulativePrice = totalItems * lowestPrice;
-
-                double? minCumulativePrice = searchFilter.MinCumulativePricePercentFromLowestCumulativePrice == null ? null
-                    : lowestCumulativePrice / 100 * searchFilter.MinCumulativePricePercentFromLowestCumulativePrice;
-                double? maxCumulativePrice = searchFilter.MaxCumulativePricePercentFromLowestCumulativePrice == null ? null
-                    : lowestCumulativePrice / 100 * searchFilter.MaxCumulativePricePercentFromLowestCumulativePrice;
-
-                if (minCumulativePrice != null && cumulativePrice < minCumulativePrice)
-                {
-                    continue;
-                }
-                if (maxCumulativePrice != null && cumulativePrice > maxCumulativePrice)
-                {
-                    continue;
-                }
-
-                sortedMarketItems.Add(marketItem);
-            }
-
-            ConsoleLog.WriteInfo($"End sort by cumulative price. Count after sort  - {sortedMarketItems.Count}");
 
             return sortedMarketItems;
         }

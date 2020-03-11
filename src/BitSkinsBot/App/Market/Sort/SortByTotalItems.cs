@@ -12,11 +12,11 @@ namespace BitSkinsBot.FastMarketAnalize
             this.searchFilter = searchFilter;
         }
 
-        public void Sort(List<BitSkinsApi.Market.MarketItem> marketItems)
+        public List<BitSkinsApi.Market.MarketItem> Sort(List<BitSkinsApi.Market.MarketItem> marketItems)
         {
             if (marketItems == null || marketItems.Count == 0 || searchFilter == null)
             {
-                return;
+                return new List<BitSkinsApi.Market.MarketItem>();
             }
 
             int? minTotalItems = searchFilter.MinTotalItems;
@@ -49,7 +49,7 @@ namespace BitSkinsBot.FastMarketAnalize
 
             ConsoleLog.WriteInfo($"End sort by total items. Count after sort - {sortedMarketItems.Count}");
 
-            marketItems = sortedMarketItems;
+            return sortedMarketItems;
         }
     }
 }

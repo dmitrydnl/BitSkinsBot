@@ -4,6 +4,6 @@ namespace BitSkinsBot.FastMarketAnalize
 {
     internal interface ISortMethod
     {
-        void Sort(List<BitSkinsApi.Market.MarketItem> marketItems);
+        List<BitSkinsApi.Market.MarketItem> Sort(List<BitSkinsApi.Market.MarketItem> marketItems);
     }
 }
