@@ -13,6 +13,8 @@ namespace BitSkinsBot.FastMarketAnalize
         private static ISortMethod sortByLowestPrice;
         private static ISortMethod sortByHighestPrice;
         private static ISortMethod sortByCumulativePrice;
+        private static ISortMethod sortByRecentAveragePrice;
+        private static ISortMethod sortByItemsOnSale;
 
         internal static List<BitSkinsApi.Market.MarketItem> Sort(List<BitSkinsApi.Market.MarketItem> marketItems, SortFilter searchFilter)
         {
@@ -32,58 +34,16 @@ namespace BitSkinsBot.FastMarketAnalize
             sortByCumulativePrice = new SortByCumulativePrice(searchFilter);
             sortedMarketItems = sortByCumulativePrice.Sort(sortedMarketItems);
 
-            sortedMarketItems = SortByRecentAveragePrice(sortedMarketItems, searchFilter);
-            sortedMarketItems = SortByItemsOnSale(sortedMarketItems, searchFilter);
+            sortByRecentAveragePrice = new SortByRecentAveragePrice(searchFilter);
+            sortedMarketItems = sortByRecentAveragePrice.Sort(sortedMarketItems);
+
+            sortByItemsOnSale = new SortByItemsOnSale(searchFilter);
+            sortedMarketItems = sortByItemsOnSale.Sort(sortedMarketItems);
+
             sortedMarketItems = SortByRecentSales(sortedMarketItems, searchFilter);
             sortedMarketItems = SortByCountInInventory(sortedMarketItems, searchFilter);
 
             ConsoleLog.WriteInfo($"End sort profitable items. Count after sort - {sortedMarketItems.Count}");
-
-            return sortedMarketItems;
-        }
-
-        private static List<BitSkinsApi.Market.MarketItem> SortByRecentAveragePrice(List<BitSkinsApi.Market.MarketItem> marketItems, SortFilter searchFilter)
-        {
-            if (marketItems == null || marketItems.Count == 0)
-            {
-                return new List<BitSkinsApi.Market.MarketItem>();
-            }
-
-            ConsoleLog.WriteInfo($"Start sort by recent average price. Count before sort - {marketItems.Count}");
-            ConsoleLog.StartProgress("Sort by recent average price");
-            int done = 1;
-
-            List<BitSkinsApi.Market.MarketItem> sortedMarketItems = new List<BitSkinsApi.Market.MarketItem>();
-            foreach (BitSkinsApi.Market.MarketItem marketItem in marketItems)
-            {
-                ConsoleLog.WriteProgress("Sort by recent average price", done, marketItems.Count);
-                done++;
-
-                double lowestPrice = marketItem.LowestPrice;
-                double? recentAveragePrice = marketItem.RecentAveragePrice;
-                if (recentAveragePrice == null)
-                {
-                    continue;
-                }
-
-                double? minRecentAveragePrice = searchFilter.MinRecentAveragePricePercentFromLowestPrice == null ? null
-                    : lowestPrice / 100 * searchFilter.MinRecentAveragePricePercentFromLowestPrice;
-                double? maxRecentAveragePrice = searchFilter.MaxRecentAveragePricePercentFromLowestPrice == null ? null
-                    : lowestPrice / 100 * searchFilter.MaxRecentAveragePricePercentFromLowestPrice;
-
-                if (minRecentAveragePrice != null && recentAveragePrice < minRecentAveragePrice)
-                {
-                    continue;
-                }
-                if (maxRecentAveragePrice != null && recentAveragePrice > maxRecentAveragePrice)
-                {
-                    continue;
-                }
-
-                sortedMarketItems.Add(marketItem);
-            }
-
-            ConsoleLog.WriteInfo($"End sort by recent average price. Count after sort - {sortedMarketItems.Count}");
 
             return sortedMarketItems;
         }
@@ -140,53 +100,6 @@ namespace BitSkinsBot.FastMarketAnalize
             }
 
             ConsoleLog.WriteInfo($"End sort by recent sales. Count after sort - {sortedMarketItems.Count}");
-
-            return sortedMarketItems;
-        }
-
-        private static List<BitSkinsApi.Market.MarketItem> SortByItemsOnSale(List<BitSkinsApi.Market.MarketItem> marketItems, SortFilter searchFilter)
-        {
-            if (marketItems == null || marketItems.Count == 0)
-            {
-                return new List<BitSkinsApi.Market.MarketItem>();
-            }
-
-            ConsoleLog.WriteInfo($"Start sort by items on sale. Count before sort - {marketItems.Count}");
-            ConsoleLog.StartProgress("Sort by items on sale");
-            int done = 1;
-
-            List<BitSkinsApi.Market.MarketItem> sortedMarketItems = new List<BitSkinsApi.Market.MarketItem>();
-            foreach (BitSkinsApi.Market.MarketItem marketItem in marketItems)
-            {
-                ConsoleLog.WriteProgress("Sort by items on sale", done, marketItems.Count);
-                done++;
-
-                string marketHashName = marketItem.MarketHashName;
-                List<ItemOnSale> itemsOnSale = GetItemsOnSale(searchFilter, marketHashName);
-                if (itemsOnSale.Count < 3)
-                {
-                    continue;
-                }
-                ItemOnSale itemOnSale1 = itemsOnSale[0];
-                ItemOnSale itemOnSale3 = itemsOnSale[2];
-
-                if (itemOnSale3.Price < itemOnSale1.Price * 1.05)
-                {
-                    continue;
-                }
-                if (itemOnSale1.IsMine)
-                {
-                    continue;
-                }
-                if (itemOnSale1.Price > marketItem.LowestPrice)
-                {
-                    continue;
-                }
-
-                sortedMarketItems.Add(marketItem);
-            }
-
-            ConsoleLog.WriteInfo($"End sort by items on sale. Count after sort - {sortedMarketItems.Count}");
 
             return sortedMarketItems;
         }
