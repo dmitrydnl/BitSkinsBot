@@ -6,7 +6,7 @@ namespace BitSkinsBot.FastMarketAnalize
 {
     public class SortByItemsOnSale : ISortMethod
     {
-        private SortFilter searchFilter;
+        private readonly SortFilter searchFilter;
 
         internal SortByItemsOnSale(SortFilter searchFilter)
         {

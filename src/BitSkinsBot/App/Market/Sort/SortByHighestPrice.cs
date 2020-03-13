@@ -5,7 +5,7 @@ namespace BitSkinsBot.FastMarketAnalize
 {
     internal class SortByHighestPrice : ISortMethod
     {
-        private SortFilter searchFilter;
+        private readonly SortFilter searchFilter;
 
         internal SortByHighestPrice(SortFilter searchFilter)
         {
