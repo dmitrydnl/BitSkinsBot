@@ -7,11 +7,11 @@ namespace BitSkinsBot
 {
     internal class Bot
     {
+        private List<IProfitableItems> profitableItems;
         private IRelistForSale relistForSale;
         private IPurchase purchase;
         private ICheckSoldItems checkSoldItems;
 
-        private List<SortFilter> searchFilters;
         private List<MarketItem> boughtItems;
         private List<MarketItem> onSaleItems;
         private List<MarketItem> soldItems;
@@ -26,6 +26,12 @@ namespace BitSkinsBot
 
         private void InitializeModules()
         {
+            profitableItems = new List<IProfitableItems>();
+            foreach (SortFilter sortFilter in SortFilter.GetFilters())
+            {
+                profitableItems.Add(new ProfitableItems(sortFilter));
+            }
+
             relistForSale = new RelistForSale();
             purchase = new Purchase();
             checkSoldItems = new CheckSoldItems();
@@ -33,7 +39,6 @@ namespace BitSkinsBot
 
         private void InitializeData()
         {
-            searchFilters = SortFilter.GetFilters();
             boughtItems = new List<MarketItem>();
             soldItems = new List<MarketItem>();
             onSaleItems = new List<MarketItem>();
@@ -43,10 +48,9 @@ namespace BitSkinsBot
         {
             while (true)
             {
-                foreach (SortFilter filter in searchFilters)
+                foreach (IProfitableItems profitable in profitableItems)
                 {
-                    IProfitableItems profitableItems = new ProfitableItems(filter);
-                    List<MarketItem> profitableMarketItems = profitableItems.SearchProfitableItems();
+                    List<MarketItem> profitableMarketItems = profitable.SearchProfitableItems();
                     if (profitableMarketItems == null || profitableMarketItems.Count == 0)
                     {
                         continue;
