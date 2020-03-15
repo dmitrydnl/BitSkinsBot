@@ -6,24 +6,24 @@ using BitSkinsBot.EventsLog;
 
 namespace BitSkinsBot.FastMarketAnalize
 {
-    public class SortByRecentSales : ISortMethod
+    internal class SortByRecentSales : ISortMethod
     {
-        private readonly SortFilter searchFilter;
+        private readonly SortFilter sortFilter;
 
-        internal SortByRecentSales(SortFilter searchFilter)
+        internal SortByRecentSales(SortFilter sortFilter)
         {
-            this.searchFilter = searchFilter;
+            this.sortFilter = sortFilter;
         }
 
         public List<BitSkinsApi.Market.MarketItem> Sort(List<BitSkinsApi.Market.MarketItem> marketItems)
         {
-            if (marketItems == null || marketItems.Count == 0 || searchFilter == null)
+            if (marketItems == null || marketItems.Count == 0 || sortFilter == null)
             {
                 return new List<BitSkinsApi.Market.MarketItem>();
             }
 
-            int? minCountOfSalesInLastWeek = searchFilter.MinCountOfSalesInLastWeek;
-            int? maxCountOfSalesInLastWeek = searchFilter.MaxCountOfSalesInLastWeek;
+            int? minCountOfSalesInLastWeek = sortFilter.MinCountOfSalesInLastWeek;
+            int? maxCountOfSalesInLastWeek = sortFilter.MaxCountOfSalesInLastWeek;
 
             ConsoleLog.WriteInfo($"Start sort by recent sales. Count before sort - {marketItems.Count}");
             ConsoleLog.StartProgress("Sort by recent sales");
@@ -40,10 +40,10 @@ namespace BitSkinsBot.FastMarketAnalize
                 int countOfSalesInLastWeek = GetCountOfSalesInLastWeek(itemRecentSales);
                 double averagePriceInLastWeek = GetAveragePriceInLastWeek(itemRecentSales);
 
-                double? minAveragePriceInLastWeek = searchFilter.MinAveragePriceInLastWeekPercentFromLowestPrice == null ? null
-                    : lowestPrice / 100 * searchFilter.MinAveragePriceInLastWeekPercentFromLowestPrice;
-                double? maxAveragePriceInLastWeek = searchFilter.MaxAveragePriceInLastWeekPercentFromLowestPrice == null ? null
-                    : lowestPrice / 100 * searchFilter.MaxAveragePriceInLastWeekPercentFromLowestPrice;
+                double? minAveragePriceInLastWeek = sortFilter.MinAveragePriceInLastWeekPercentFromLowestPrice == null ? null
+                    : lowestPrice / 100 * sortFilter.MinAveragePriceInLastWeekPercentFromLowestPrice;
+                double? maxAveragePriceInLastWeek = sortFilter.MaxAveragePriceInLastWeekPercentFromLowestPrice == null ? null
+                    : lowestPrice / 100 * sortFilter.MaxAveragePriceInLastWeekPercentFromLowestPrice;
 
                 if (minCountOfSalesInLastWeek != null && countOfSalesInLastWeek < minCountOfSalesInLastWeek)
                 {
@@ -78,7 +78,7 @@ namespace BitSkinsBot.FastMarketAnalize
             List<ItemRecentSale> itemRecentSales = new List<ItemRecentSale>();
             for (int i = 1; i <= 5; i++)
             {
-                List<ItemRecentSale> items = RecentSaleInfo.GetRecentSaleInfo(searchFilter.App, marketHashName, i);
+                List<ItemRecentSale> items = RecentSaleInfo.GetRecentSaleInfo(sortFilter.App, marketHashName, i);
                 foreach (ItemRecentSale item in items)
                 {
                     itemRecentSales.Add(item);

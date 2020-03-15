@@ -5,16 +5,16 @@ namespace BitSkinsBot.FastMarketAnalize
 {
     internal class SortByRecentAveragePrice : ISortMethod
     {
-        private readonly SortFilter searchFilter;
+        private readonly SortFilter sortFilter;
 
-        internal SortByRecentAveragePrice(SortFilter searchFilter)
+        internal SortByRecentAveragePrice(SortFilter sortFilter)
         {
-            this.searchFilter = searchFilter;
+            this.sortFilter = sortFilter;
         }
 
         public List<BitSkinsApi.Market.MarketItem> Sort(List<BitSkinsApi.Market.MarketItem> marketItems)
         {
-            if (marketItems == null || marketItems.Count == 0 || searchFilter == null)
+            if (marketItems == null || marketItems.Count == 0 || sortFilter == null)
             {
                 return new List<BitSkinsApi.Market.MarketItem>();
             }
@@ -36,10 +36,10 @@ namespace BitSkinsBot.FastMarketAnalize
                     continue;
                 }
 
-                double? minRecentAveragePrice = searchFilter.MinRecentAveragePricePercentFromLowestPrice == null ? null
-                    : lowestPrice / 100 * searchFilter.MinRecentAveragePricePercentFromLowestPrice;
-                double? maxRecentAveragePrice = searchFilter.MaxRecentAveragePricePercentFromLowestPrice == null ? null
-                    : lowestPrice / 100 * searchFilter.MaxRecentAveragePricePercentFromLowestPrice;
+                double? minRecentAveragePrice = sortFilter.MinRecentAveragePricePercentFromLowestPrice == null ? null
+                    : lowestPrice / 100 * sortFilter.MinRecentAveragePricePercentFromLowestPrice;
+                double? maxRecentAveragePrice = sortFilter.MaxRecentAveragePricePercentFromLowestPrice == null ? null
+                    : lowestPrice / 100 * sortFilter.MaxRecentAveragePricePercentFromLowestPrice;
 
                 if (minRecentAveragePrice != null && recentAveragePrice < minRecentAveragePrice)
                 {

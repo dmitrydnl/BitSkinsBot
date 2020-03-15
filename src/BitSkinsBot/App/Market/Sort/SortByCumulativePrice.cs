@@ -5,16 +5,16 @@ namespace BitSkinsBot.FastMarketAnalize
 {
     internal class SortByCumulativePrice : ISortMethod
     {
-        private readonly SortFilter searchFilter;
+        private readonly SortFilter sortFilter;
 
-        internal SortByCumulativePrice(SortFilter searchFilter)
+        internal SortByCumulativePrice(SortFilter sortFilter)
         {
-            this.searchFilter = searchFilter;
+            this.sortFilter = sortFilter;
         }
 
         public List<BitSkinsApi.Market.MarketItem> Sort(List<BitSkinsApi.Market.MarketItem> marketItems)
         {
-            if (marketItems == null || marketItems.Count == 0 || searchFilter == null)
+            if (marketItems == null || marketItems.Count == 0 || sortFilter == null)
             {
                 return new List<BitSkinsApi.Market.MarketItem>();
             }
@@ -34,10 +34,10 @@ namespace BitSkinsBot.FastMarketAnalize
                 double cumulativePrice = marketItem.CumulativePrice;
                 double lowestCumulativePrice = totalItems * lowestPrice;
 
-                double? minCumulativePrice = searchFilter.MinCumulativePricePercentFromLowestCumulativePrice == null ? null
-                    : lowestCumulativePrice / 100 * searchFilter.MinCumulativePricePercentFromLowestCumulativePrice;
-                double? maxCumulativePrice = searchFilter.MaxCumulativePricePercentFromLowestCumulativePrice == null ? null
-                    : lowestCumulativePrice / 100 * searchFilter.MaxCumulativePricePercentFromLowestCumulativePrice;
+                double? minCumulativePrice = sortFilter.MinCumulativePricePercentFromLowestCumulativePrice == null ? null
+                    : lowestCumulativePrice / 100 * sortFilter.MinCumulativePricePercentFromLowestCumulativePrice;
+                double? maxCumulativePrice = sortFilter.MaxCumulativePricePercentFromLowestCumulativePrice == null ? null
+                    : lowestCumulativePrice / 100 * sortFilter.MaxCumulativePricePercentFromLowestCumulativePrice;
 
                 if (minCumulativePrice != null && cumulativePrice < minCumulativePrice)
                 {

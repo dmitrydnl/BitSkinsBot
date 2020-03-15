@@ -4,18 +4,18 @@ using BitSkinsBot.EventsLog;
 
 namespace BitSkinsBot.FastMarketAnalize
 {
-    public class SortByItemsOnSale : ISortMethod
+    internal class SortByItemsOnSale : ISortMethod
     {
-        private readonly SortFilter searchFilter;
+        private readonly SortFilter sortFilter;
 
-        internal SortByItemsOnSale(SortFilter searchFilter)
+        internal SortByItemsOnSale(SortFilter sortFilter)
         {
-            this.searchFilter = searchFilter;
+            this.sortFilter = sortFilter;
         }
 
         public List<BitSkinsApi.Market.MarketItem> Sort(List<BitSkinsApi.Market.MarketItem> marketItems)
         {
-            if (marketItems == null || marketItems.Count == 0 || searchFilter == null)
+            if (marketItems == null || marketItems.Count == 0 || sortFilter == null)
             {
                 return new List<BitSkinsApi.Market.MarketItem>();
             }
@@ -63,7 +63,7 @@ namespace BitSkinsBot.FastMarketAnalize
 
         private List<ItemOnSale> GetItemsOnSale(string marketHashName)
         {
-            List<ItemOnSale> itemsOnSale = InventoryOnSale.GetInventoryOnSale(searchFilter.App, 1, marketHashName, 0, 0, InventoryOnSale.SortBy.Price,
+            List<ItemOnSale> itemsOnSale = InventoryOnSale.GetInventoryOnSale(sortFilter.App, 1, marketHashName, 0, 0, InventoryOnSale.SortBy.Price,
                     InventoryOnSale.SortOrder.Asc, InventoryOnSale.ThreeChoices.NotImportant, InventoryOnSale.ThreeChoices.NotImportant,
                     InventoryOnSale.ThreeChoices.NotImportant, InventoryOnSale.ResultsPerPage.R30, InventoryOnSale.ThreeChoices.False);
             return itemsOnSale;

@@ -3,7 +3,7 @@ using BitSkinsBot.EventsLog;
 
 namespace BitSkinsBot.FastMarketAnalize
 {
-    internal static class SortItems
+    internal class SortItems : ISortMethod
     {
         private static ISortMethod sortByTotalItems;
         private static ISortMethod sortByLowestPrice;
@@ -14,34 +14,31 @@ namespace BitSkinsBot.FastMarketAnalize
         private static ISortMethod sortByRecentSales;
         private static ISortMethod sortByCountInInventory;
 
-        internal static List<BitSkinsApi.Market.MarketItem> Sort(List<BitSkinsApi.Market.MarketItem> marketItems, SortFilter searchFilter)
+        internal SortItems(SortFilter sortFilter)
+        {
+            sortByTotalItems = new SortByTotalItems(sortFilter);
+            sortByLowestPrice = new SortByLowestPrice(sortFilter);
+            sortByHighestPrice = new SortByHighestPrice(sortFilter);
+            sortByCumulativePrice = new SortByCumulativePrice(sortFilter);
+            sortByRecentAveragePrice = new SortByRecentAveragePrice(sortFilter);
+            sortByItemsOnSale = new SortByItemsOnSale(sortFilter);
+            sortByRecentSales = new SortByRecentSales(sortFilter);
+            sortByCountInInventory = new SortByCountInInventory(sortFilter);
+        }
+
+        public List<BitSkinsApi.Market.MarketItem> Sort(List<BitSkinsApi.Market.MarketItem> marketItems)
         {
             List<BitSkinsApi.Market.MarketItem> sortedMarketItems = marketItems;
 
             ConsoleLog.WriteInfo($"Start sort profitable items. Count before sort - {sortedMarketItems.Count}");
 
-            sortByTotalItems = new SortByTotalItems(searchFilter);
             sortedMarketItems = sortByTotalItems.Sort(sortedMarketItems);
-
-            sortByLowestPrice = new SortByLowestPrice(searchFilter);
             sortedMarketItems = sortByLowestPrice.Sort(sortedMarketItems);
-
-            sortByHighestPrice = new SortByHighestPrice(searchFilter);
             sortedMarketItems = sortByHighestPrice.Sort(sortedMarketItems);
-
-            sortByCumulativePrice = new SortByCumulativePrice(searchFilter);
             sortedMarketItems = sortByCumulativePrice.Sort(sortedMarketItems);
-
-            sortByRecentAveragePrice = new SortByRecentAveragePrice(searchFilter);
             sortedMarketItems = sortByRecentAveragePrice.Sort(sortedMarketItems);
-
-            sortByItemsOnSale = new SortByItemsOnSale(searchFilter);
             sortedMarketItems = sortByItemsOnSale.Sort(sortedMarketItems);
-
-            sortByRecentSales = new SortByRecentSales(searchFilter);
             sortedMarketItems = sortByRecentSales.Sort(sortedMarketItems);
-
-            sortByCountInInventory = new SortByCountInInventory(searchFilter);
             sortedMarketItems = sortByCountInInventory.Sort(sortedMarketItems);
 
             ConsoleLog.WriteInfo($"End sort profitable items. Count after sort - {sortedMarketItems.Count}");

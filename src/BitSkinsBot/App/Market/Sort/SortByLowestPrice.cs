@@ -5,22 +5,22 @@ namespace BitSkinsBot.FastMarketAnalize
 {
     internal class SortByLowestPrice : ISortMethod
     {
-        private readonly SortFilter searchFilter;
+        private readonly SortFilter sortFilter;
 
-        internal SortByLowestPrice(SortFilter searchFilter)
+        internal SortByLowestPrice(SortFilter sortFilter)
         {
-            this.searchFilter = searchFilter;
+            this.sortFilter = sortFilter;
         }
 
         public List<BitSkinsApi.Market.MarketItem> Sort(List<BitSkinsApi.Market.MarketItem> marketItems)
         {
-            if (marketItems == null || marketItems.Count == 0 || searchFilter == null)
+            if (marketItems == null || marketItems.Count == 0 || sortFilter == null)
             {
                 return new List<BitSkinsApi.Market.MarketItem>();
             }
 
-            double? minLowestPrice = searchFilter.MinLowestPrice;
-            double? maxLowestPrice = searchFilter.MaxLowestPrice;
+            double? minLowestPrice = sortFilter.MinLowestPrice;
+            double? maxLowestPrice = sortFilter.MaxLowestPrice;
 
             ConsoleLog.WriteInfo($"Start sort by lowest price. Count before sort  - {marketItems.Count}");
             ConsoleLog.StartProgress("Sort by lowest price");

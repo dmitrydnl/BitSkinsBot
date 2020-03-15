@@ -6,23 +6,23 @@ namespace BitSkinsBot.FastMarketAnalize
 {
     internal class SortByCountInInventory : ISortMethod
     {
-        private readonly SortFilter searchFilter;
+        private readonly SortFilter sortFilter;
 
-        internal SortByCountInInventory(SortFilter searchFilter)
+        internal SortByCountInInventory(SortFilter sortFilter)
         {
-            this.searchFilter = searchFilter;
+            this.sortFilter = sortFilter;
         }
 
         public List<BitSkinsApi.Market.MarketItem> Sort(List<BitSkinsApi.Market.MarketItem> marketItems)
         {
-            if (marketItems == null || marketItems.Count == 0 || searchFilter == null)
+            if (marketItems == null || marketItems.Count == 0 || sortFilter == null)
             {
                 return new List<BitSkinsApi.Market.MarketItem>();
             }
 
-            int? minItemsOnSale = searchFilter.MinItemsOnSale;
-            int? maxItemsOnSale = searchFilter.MaxItemsOnSale;
-            BitSkinsInventory bitSkinsInventory = Inventories.GetAccountInventory(searchFilter.App, 1).BitSkinsInventory;
+            int? minItemsOnSale = sortFilter.MinItemsOnSale;
+            int? maxItemsOnSale = sortFilter.MaxItemsOnSale;
+            BitSkinsInventory bitSkinsInventory = Inventories.GetAccountInventory(sortFilter.App, 1).BitSkinsInventory;
 
             ConsoleLog.WriteInfo($"Start sort by count in inventory. Count before sort  - {marketItems.Count}");
             ConsoleLog.StartProgress("Sort by count in inventory");
