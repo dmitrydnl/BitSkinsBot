@@ -45,8 +45,8 @@ namespace BitSkinsBot
             {
                 foreach (SortFilter filter in searchFilters)
                 {
-                    ProfitableItems profitableItems = new ProfitableItems(filter);
-                    List<MarketItem> profitableMarketItems = profitableItems.GetProfitableItems();
+                    IProfitableItems profitableItems = new ProfitableItems(filter);
+                    List<MarketItem> profitableMarketItems = profitableItems.SearchProfitableItems();
                     if (profitableMarketItems == null || profitableMarketItems.Count == 0)
                     {
                         continue;

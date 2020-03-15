@@ -11,12 +11,12 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App\" />
-    <Folder Include="App\FastMarketAnalize\" />
     <Folder Include="App\EventsLog\" />
     <Folder Include="App\Market\" />
     <Folder Include="App\Market\Sort\" />
     <Folder Include="App\Market\Sale\" />
     <Folder Include="App\Market\Buy\" />
+    <Folder Include="App\Market\Search\" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="filters.json" />

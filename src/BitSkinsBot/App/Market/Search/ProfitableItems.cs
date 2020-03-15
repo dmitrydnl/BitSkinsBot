@@ -5,7 +5,7 @@ using BitSkinsBot.EventsLog;
 
 namespace BitSkinsBot.FastMarketAnalize
 {
-    internal class ProfitableItems
+    internal class ProfitableItems : IProfitableItems
     {
         private readonly SortFilter sortFilter;
         private readonly ISortMethod sortItems;
@@ -16,31 +16,31 @@ namespace BitSkinsBot.FastMarketAnalize
             sortItems = new SortItems(sortFilter);
         }
 
-        internal List<MarketItem> GetProfitableItems()
+        public List<MarketItem> SearchProfitableItems()
         {
             ConsoleLog.WriteInfo("Start get profitable items");
 
-            List<BitSkinsApi.Market.MarketItem> marketItems = GetMarketItems(sortFilter);
+            List<BitSkinsApi.Market.MarketItem> marketItems = GetMarketItems();
             marketItems = sortItems.Sort(marketItems);
-            List<MarketItem> profitableMarketItems = GetProfitableMarketItems(marketItems, sortFilter);
+            List<MarketItem> profitableMarketItems = SearchProfitableMarketItems(marketItems);
 
             ConsoleLog.WriteInfo("End get profitable items");
 
             return profitableMarketItems;
         }
 
-        private List<BitSkinsApi.Market.MarketItem> GetMarketItems(SortFilter searchFilter)
+        private List<BitSkinsApi.Market.MarketItem> GetMarketItems()
         {
-            List<BitSkinsApi.Market.MarketItem> marketItems = MarketData.GetMarketData(searchFilter.App);
+            List<BitSkinsApi.Market.MarketItem> marketItems = MarketData.GetMarketData(sortFilter.App);
 
             ConsoleLog.WriteInfo($"Count market items - {marketItems.Count}");
 
             return marketItems;
         }
 
-        private List<MarketItem> GetProfitableMarketItems(List<BitSkinsApi.Market.MarketItem> marketItems, SortFilter searchFilter)
+        private List<MarketItem> SearchProfitableMarketItems(List<BitSkinsApi.Market.MarketItem> marketItems)
         {
-            if (marketItems == null || marketItems.Count == 0)
+            if (marketItems == null || marketItems.Count == 0 || sortFilter == null)
             {
                 return new List<MarketItem>();
             }
@@ -55,8 +55,7 @@ namespace BitSkinsBot.FastMarketAnalize
                 ConsoleLog.WriteProgress("Get profitable market items", done, marketItems.Count);
                 done++;
 
-                string marketHashName = marketItem.MarketHashName;
-                List<ItemOnSale> itemsOnSale = GetItemsOnSale(searchFilter, marketHashName);
+                List<ItemOnSale> itemsOnSale = GetItemsOnSale(marketItem.MarketHashName);
                 if (itemsOnSale.Count < 2)
                 {
                     continue;
@@ -64,8 +63,8 @@ namespace BitSkinsBot.FastMarketAnalize
                 ItemOnSale itemOnSale1 = itemsOnSale[0];
                 ItemOnSale itemOnSale2 = itemsOnSale[1];
 
-                int sellPricePercentFromBuyPrice = searchFilter.MinAveragePriceInLastWeekPercentFromLowestPrice == null ? 110
-                    : Math.Max(110, searchFilter.MinAveragePriceInLastWeekPercentFromLowestPrice.Value);
+                int sellPricePercentFromBuyPrice = sortFilter.MinAveragePriceInLastWeekPercentFromLowestPrice == null ? 110
+                    : Math.Max(110, sortFilter.MinAveragePriceInLastWeekPercentFromLowestPrice.Value);
                 double sellPrice = itemOnSale1.Price / 100 * sellPricePercentFromBuyPrice;
                 if (itemOnSale2.Price > sellPrice + 0.01)
                 {
@@ -75,7 +74,7 @@ namespace BitSkinsBot.FastMarketAnalize
 
                 MarketItem profitableMarketItem = new MarketItem
                 {
-                    App = searchFilter.App,
+                    App = sortFilter.App,
                     Name = marketItem.MarketHashName,
                     Id = itemOnSale1.ItemId,
                     BuyPrice = itemOnSale1.Price,
@@ -89,9 +88,9 @@ namespace BitSkinsBot.FastMarketAnalize
             return profitableMarketItems;
         }
 
-        private List<ItemOnSale> GetItemsOnSale(SortFilter searchFilter, string marketHashName)
+        private List<ItemOnSale> GetItemsOnSale(string marketHashName)
         {
-            List<ItemOnSale> itemsOnSale = InventoryOnSale.GetInventoryOnSale(searchFilter.App, 1, marketHashName, 0, 0, InventoryOnSale.SortBy.Price,
+            List<ItemOnSale> itemsOnSale = InventoryOnSale.GetInventoryOnSale(sortFilter.App, 1, marketHashName, 0, 0, InventoryOnSale.SortBy.Price,
                     InventoryOnSale.SortOrder.Asc, InventoryOnSale.ThreeChoices.NotImportant, InventoryOnSale.ThreeChoices.NotImportant,
                     InventoryOnSale.ThreeChoices.NotImportant, InventoryOnSale.ResultsPerPage.R30, InventoryOnSale.ThreeChoices.False);
             return itemsOnSale;
