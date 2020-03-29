@@ -8,6 +8,7 @@ namespace BitSkinsBot
     internal class Bot
     {
         private List<IProfitableItems> profitableItems;
+
         private IRelistForSale relistForSale;
         private IPurchase purchase;
         private ICheckSoldItems checkSoldItems;
@@ -20,18 +21,22 @@ namespace BitSkinsBot
         {
             AccountData accountData = AccountData.GetInstance();
             BitSkinsApi.Account.AccountData.SetupAccount(accountData.ApiKey, accountData.SecretCode);
+            InitializeFilters();
             InitializeModules();
             InitializeData();
         }
 
-        private void InitializeModules()
+        private void InitializeFilters()
         {
             profitableItems = new List<IProfitableItems>();
             foreach (SortFilter sortFilter in SortFilter.GetFilters())
             {
                 profitableItems.Add(new ProfitableItems(sortFilter));
             }
+        }
 
+        private void InitializeModules()
+        {
             relistForSale = new RelistForSale();
             purchase = new Purchase();
             checkSoldItems = new CheckSoldItems();
