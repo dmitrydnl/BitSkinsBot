@@ -1,6 +1,9 @@
 ﻿using System.Threading;
 using System.Collections.Generic;
-using BitSkinsBot.FastMarketAnalize;
+using BitSkinsBot.Market;
+using BitSkinsBot.Market.Buy;
+using BitSkinsBot.Market.Sale;
+using BitSkinsBot.Market.Search;
 using BitSkinsBot.Market.Sort;
 using BitSkinsBot.EventsLog;
 

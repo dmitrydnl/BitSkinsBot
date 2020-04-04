@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace BitSkinsBot.FastMarketAnalize
+namespace BitSkinsBot.Market.Buy
 {
     internal interface ICheckSoldItems
     {

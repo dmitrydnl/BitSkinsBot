@@ -1,7 +1,7 @@
 ﻿using System;
 using BitSkinsApi.Market;
 
-namespace BitSkinsBot.FastMarketAnalize
+namespace BitSkinsBot.Market
 {
     internal class MarketItem
     {

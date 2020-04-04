@@ -4,7 +4,7 @@ using BitSkinsBot.Market.Sort;
 using BitSkinsBot.EventsLog;
 using BitSkinsApi.Market;
 
-namespace BitSkinsBot.FastMarketAnalize
+namespace BitSkinsBot.Market.Search
 {
     internal class ProfitableItems : IProfitableItems
     {

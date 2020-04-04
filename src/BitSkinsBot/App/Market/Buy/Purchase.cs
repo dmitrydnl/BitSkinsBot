@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using BitSkinsApi.Market;
 using BitSkinsBot.EventsLog;
+using BitSkinsApi.Market;
 
-namespace BitSkinsBot.FastMarketAnalize
+namespace BitSkinsBot.Market.Buy
 {
     internal class Purchase : IPurchase
     {

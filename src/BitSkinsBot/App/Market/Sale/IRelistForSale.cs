@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace BitSkinsBot.FastMarketAnalize
+namespace BitSkinsBot.Market.Sale
 {
     internal interface IRelistForSale
     {
