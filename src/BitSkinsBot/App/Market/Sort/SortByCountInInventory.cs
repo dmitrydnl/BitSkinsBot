@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
-using BitSkinsApi.Inventory;
 using BitSkinsBot.EventsLog;
+using BitSkinsApi.Inventory;
 
 namespace BitSkinsBot.Market.Sort
 {

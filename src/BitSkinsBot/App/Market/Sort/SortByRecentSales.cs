@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Linq;
 using System.Collections.Generic;
-using BitSkinsApi.Market;
 using BitSkinsBot.EventsLog;
+using BitSkinsApi.Market;
 
 namespace BitSkinsBot.Market.Sort
 {
