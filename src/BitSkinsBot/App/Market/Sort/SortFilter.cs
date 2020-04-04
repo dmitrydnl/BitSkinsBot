@@ -2,7 +2,7 @@
 using Newtonsoft.Json;
 using BitSkinsApi.Market;
 
-namespace BitSkinsBot.FastMarketAnalize
+namespace BitSkinsBot.Market.Sort
 {
     internal class SortFilter
     {

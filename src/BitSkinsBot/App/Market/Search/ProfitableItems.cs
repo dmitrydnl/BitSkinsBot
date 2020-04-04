@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using BitSkinsApi.Market;
+using BitSkinsBot.Market.Sort;
 using BitSkinsBot.EventsLog;
+using BitSkinsApi.Market;
 
 namespace BitSkinsBot.FastMarketAnalize
 {

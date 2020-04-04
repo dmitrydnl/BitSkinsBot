@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using BitSkinsBot.EventsLog;
 
-namespace BitSkinsBot.FastMarketAnalize
+namespace BitSkinsBot.Market.Sort
 {
     internal class SortItems : ISortMethod
     {

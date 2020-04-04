@@ -2,7 +2,7 @@
 using BitSkinsApi.Market;
 using BitSkinsBot.EventsLog;
 
-namespace BitSkinsBot.FastMarketAnalize
+namespace BitSkinsBot.Market.Sort
 {
     internal class SortByItemsOnSale : ISortMethod
     {

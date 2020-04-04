@@ -1,6 +1,7 @@
 ﻿using System.Threading;
 using System.Collections.Generic;
 using BitSkinsBot.FastMarketAnalize;
+using BitSkinsBot.Market.Sort;
 using BitSkinsBot.EventsLog;
 
 namespace BitSkinsBot
