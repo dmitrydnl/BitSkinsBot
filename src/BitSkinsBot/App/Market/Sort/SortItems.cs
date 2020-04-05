@@ -5,14 +5,14 @@ namespace BitSkinsBot.Market.Sort
 {
     internal class SortItems : ISortMethod
     {
-        private static ISortMethod sortByTotalItems;
-        private static ISortMethod sortByLowestPrice;
-        private static ISortMethod sortByHighestPrice;
-        private static ISortMethod sortByCumulativePrice;
-        private static ISortMethod sortByRecentAveragePrice;
-        private static ISortMethod sortByItemsOnSale;
-        private static ISortMethod sortByRecentSales;
-        private static ISortMethod sortByCountInInventory;
+        private ISortMethod sortByTotalItems;
+        private ISortMethod sortByLowestPrice;
+        private ISortMethod sortByHighestPrice;
+        private ISortMethod sortByCumulativePrice;
+        private ISortMethod sortByRecentAveragePrice;
+        private ISortMethod sortByItemsOnSale;
+        private ISortMethod sortByRecentSales;
+        private ISortMethod sortByCountInInventory;
 
         internal SortItems(SortFilter sortFilter)
         {
