@@ -1,0 +1,8 @@
+language: csharp
+mono: none
+dotnet: 2.1.0
+dist: xenial
+script:
+ - cd src/BitSkinsBot
+ - dotnet restore
+ - dotnet build
